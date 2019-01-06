@@ -5,10 +5,10 @@ A React renderless rich text editor component.
 Still under development. Do not use in production.
 
 ## ✨ Features
-- Written in Typescript
-- Renderless, can be used along side your favorite UI library
+- Written in [TypeScript](https://www.typescriptlang.org/)
+- Renderless, can be used alongside your favorite UI library
 - Extendable
-- Based on ProseMirror
+- Based on [ProseMirror](http://prosemirror.net/)
 
 ## 📦 Install
 
