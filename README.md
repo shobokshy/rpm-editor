@@ -1,4 +1,4 @@
-# rpm-editor
+# RPM-Editor
 A React renderless rich text editor component.
 
 ## ⚠️ Warning
