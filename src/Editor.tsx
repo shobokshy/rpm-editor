@@ -4,6 +4,7 @@ import actions, { Actions } from './actions/Index';
 import Plugins from './plugins';
 import BuiltInSchema from './schema';
 import { EditorView } from 'prosemirror-view';
+import { EditorMethods } from './UI';
 
 require('./Editor.css');
 
@@ -17,7 +18,7 @@ interface IComponentProps {
 	editable: boolean,
 	className?: string,
 	children?: React.ReactNode,
-	//children?: (editorFunctions: EditorMethods) => React.ReactNode
+	//children: (editorFunctions: EditorMethods) => React.ReactNode | React.ReactNode
 }
 
 /**
@@ -26,6 +27,7 @@ interface IComponentProps {
 interface EditorContext {
 	editorState: EditorState,
 	dispatchTransaction: DispatchTransaction,
+	actions: Actions,
 	editable: boolean
 }
 
@@ -107,7 +109,8 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 					value={{
 						editorState: this.state.editorState,
 						dispatchTransaction: this.dispatchTransaction.bind(this),
-						editable: this.props.editable
+						editable: this.props.editable,
+						actions: this.getActions(this.state.editorState, this.dispatchTransaction.bind(this))
 					}}
 				>
 					{this.props.children}
@@ -119,4 +122,3 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 
 export default Editor;
 export { editorContext, DispatchTransaction };
-
