@@ -1,6 +1,5 @@
 import { EditorState, Transaction } from 'prosemirror-state';
 import * as React from 'react';
-import { EditorMethods } from './UI';
 import { EditorView } from 'prosemirror-view';
 interface IComponentState {
     editorState: EditorState;
@@ -10,14 +9,29 @@ interface IComponentState {
 interface IComponentProps {
     editable: boolean;
     className?: string;
-    children: (editorFunctions: EditorMethods) => React.ReactNode;
+    children?: React.ReactNode;
 }
+/**
+ * Interface for the editor's context
+ */
+interface EditorContext {
+    editorState: EditorState;
+    dispatchTransaction: DispatchTransaction;
+    editable: boolean;
+}
+/**
+ * Editor's context which allows for different editor components to share state & methods
+ */
+declare const editorContext: React.Context<EditorContext | null>;
 /**
  * A function that takes a transaction as an input and applies that transaction to the editor's state
  */
-export declare type DispatchTransaction = (tr: Transaction) => void;
+declare type DispatchTransaction = (tr: Transaction) => void;
 declare class Editor extends React.Component<IComponentProps, IComponentState> {
     constructor(props: IComponentProps);
+    /**
+     * Create a new state for Prosemirror
+     */
     private createEditorState;
     /**
      * Update current editor state with a new transaction
@@ -33,4 +47,5 @@ declare class Editor extends React.Component<IComponentProps, IComponentState> {
     private focus;
     render(): JSX.Element;
 }
-export { Editor };
+export default Editor;
+export { editorContext, DispatchTransaction };
