@@ -1,5 +1,6 @@
 import { EditorState, Transaction } from 'prosemirror-state';
 import * as React from 'react';
+import { Actions } from './actions/Index';
 import { EditorView } from 'prosemirror-view';
 interface IComponentState {
     editorState: EditorState;
@@ -17,6 +18,7 @@ interface IComponentProps {
 interface EditorContext {
     editorState: EditorState;
     dispatchTransaction: DispatchTransaction;
+    actions: Actions;
     editable: boolean;
 }
 /**
