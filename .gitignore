@@ -1,3 +1,6 @@
+# Ignores compiled TypeScript files
+lib/
+
 # Logs
 logs
 *.log
