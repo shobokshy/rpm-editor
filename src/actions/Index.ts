@@ -25,7 +25,7 @@ const actions: Actions = {
     // Mark Commands
     bold: new Action({
         command: () => toggleMark(BuiltInSchema.marks.strong),
-        type: BuiltInSchema.marks.em
+        type: BuiltInSchema.marks.strong
     }),
     italic: new Action({
         command: () => toggleMark(BuiltInSchema.marks.em),
