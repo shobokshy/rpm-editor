@@ -3,9 +3,8 @@ import * as React from 'react';
 import actions, { Actions } from './actions/Index';
 import Plugins from './plugins';
 import BuiltInSchema from './schema';
-import { EditorMethods, UI } from './UI';
-import { View } from './View';
 import { EditorView } from 'prosemirror-view';
+import { EditorMethods } from './UI';
 
 require('./Editor.css');
 
@@ -18,13 +17,29 @@ interface IComponentState {
 interface IComponentProps {
 	editable: boolean,
 	className?: string,
-	children: (editorFunctions: EditorMethods) => React.ReactNode
+	children?: React.ReactNode,
+	//children: (editorFunctions: EditorMethods) => React.ReactNode | React.ReactNode
 }
+
+/**
+ * Interface for the editor's context
+ */
+interface EditorContext {
+	editorState: EditorState,
+	dispatchTransaction: DispatchTransaction,
+	actions: Actions,
+	editable: boolean
+}
+
+/**
+ * Editor's context which allows for different editor components to share state & methods
+ */
+const editorContext = React.createContext<EditorContext | null>(null);
 
 /**
  * A function that takes a transaction as an input and applies that transaction to the editor's state
  */
-export type DispatchTransaction = (tr: Transaction) => void
+type DispatchTransaction = (tr: Transaction) => void
 
 class Editor extends React.Component<IComponentProps, IComponentState> {
 	constructor(props: IComponentProps) {
@@ -36,6 +51,9 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 		}
 	}
 
+	/**
+	 * Create a new state for Prosemirror
+	 */
 	private createEditorState(): EditorState {
 		return EditorState.create({
 			schema: BuiltInSchema,
@@ -87,25 +105,20 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 	public render() {
 		return (
 			<div className={this.props.className ? this.props.className : "rpm-editor"}>
-				<UI
-					editorState={this.state.editorState}
-					dispatchTransaction={this.dispatchTransaction.bind(this)}
-					editable={this.props.editable}
-					children={this.props.children}
-					actions={this.getActions(this.state.editorState, this.dispatchTransaction.bind(this))}
-				/>
-
-				<View
-					editorState={this.state.editorState}
-					dispatchTransaction={this.dispatchTransaction.bind(this)}
-					editable={this.props.editable}
-
-					ref={() => this.state.editorView}
-				/>
+				<editorContext.Provider
+					value={{
+						editorState: this.state.editorState,
+						dispatchTransaction: this.dispatchTransaction.bind(this),
+						editable: this.props.editable,
+						actions: this.getActions(this.state.editorState, this.dispatchTransaction.bind(this))
+					}}
+				>
+					{this.props.children}
+				</editorContext.Provider>
 			</div>
 		);
 	}
 }
 
-export { Editor };
-
+export default Editor;
+export { editorContext, DispatchTransaction };
