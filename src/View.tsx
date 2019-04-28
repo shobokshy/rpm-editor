@@ -1,14 +1,12 @@
 import * as React from 'react';
-import { Transaction, EditorState } from "prosemirror-state";
+import { Transaction } from "prosemirror-state";
 import { EditorView } from 'prosemirror-view';
-import { DispatchTransaction } from './Editor';
+import { editorContext } from './Editor';
 
 
 
 interface IComponentProps {
-    editorState: EditorState,
-    dispatchTransaction: DispatchTransaction,
-    editable: boolean
+
 }
 
 interface IComponentState {
@@ -32,7 +30,7 @@ class View extends React.Component<IComponentProps,IComponentState> {
     // on new state from parent, update the view with that state
     componentDidUpdate(prevProps: IComponentProps) {
         if(this.state.editorView) {
-            this.state.editorView.updateState(this.props.editorState);
+            this.state.editorView.updateState(this.context.editorState);
             this.focus();
         }
     }
@@ -42,9 +40,9 @@ class View extends React.Component<IComponentProps,IComponentState> {
             editorView: new EditorView(
                 this.state.editorRef.current,
                 {
-                    state: this.props.editorState,
+                    state: this.context.editorState,
                     dispatchTransaction: this.dispatchTransaction.bind(this),
-                    editable: () => this.props.editable
+                    editable: () => this.context.editable
                 }
             )
         })
@@ -53,7 +51,7 @@ class View extends React.Component<IComponentProps,IComponentState> {
     // dispatch transaction function from parent
     // send new transactions coming from view to parent
     private dispatchTransaction(tr: Transaction) {
-        this.props.dispatchTransaction(tr);
+        this.context.dispatchTransaction(tr);
     }
 
     // Focus cursor to editor view
@@ -73,6 +71,7 @@ class View extends React.Component<IComponentProps,IComponentState> {
     }
 }
 
-export {
-    View
-}
+// Subscribe to the editor's context
+View.contextType = editorContext;
+
+export default View;

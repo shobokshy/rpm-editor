@@ -1,3 +1,6 @@
+import Editor from './Editor';
+import View from './View';
 
-export { Editor } from "./Editor";
+
+export { Editor, View };
 export { default as actions } from "./actions/Index";
