@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Transaction } from "prosemirror-state";
 import { EditorView } from 'prosemirror-view';
-import { editorContext } from './Editor';
+import { EditorContext } from './Editor';
 
 
 
@@ -72,6 +72,6 @@ class View extends React.Component<IComponentProps,IComponentState> {
 }
 
 // Subscribe to the editor's context
-View.contextType = editorContext;
+View.contextType = EditorContext;
 
 export default View;

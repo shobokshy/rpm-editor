@@ -24,7 +24,7 @@ interface IComponentProps {
 /**
  * Interface for the editor's context
  */
-interface EditorContext {
+interface IEditorContext {
 	editorState: EditorState,
 	dispatchTransaction: DispatchTransaction,
 	actions: Actions,
@@ -34,7 +34,7 @@ interface EditorContext {
 /**
  * Editor's context which allows for different editor components to share state & methods
  */
-const editorContext = React.createContext<EditorContext | null>(null);
+const EditorContext = React.createContext<IEditorContext | null>(null);
 
 /**
  * A function that takes a transaction as an input and applies that transaction to the editor's state
@@ -105,7 +105,7 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 	public render() {
 		return (
 			<div className={this.props.className ? this.props.className : "rpm-editor"}>
-				<editorContext.Provider
+				<EditorContext.Provider
 					value={{
 						editorState: this.state.editorState,
 						dispatchTransaction: this.dispatchTransaction.bind(this),
@@ -114,11 +114,11 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 					}}
 				>
 					{this.props.children}
-				</editorContext.Provider>
+				</EditorContext.Provider>
 			</div>
 		);
 	}
 }
 
 export default Editor;
-export { editorContext, DispatchTransaction };
+export { DispatchTransaction, EditorContext, IEditorContext };
