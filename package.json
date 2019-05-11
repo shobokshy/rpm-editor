@@ -19,7 +19,7 @@
   ],
   "author": "shobokshy",
   "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "prosemirror-commands": "^1.0.7",
     "prosemirror-dropcursor": "^1.1.1",
     "prosemirror-gapcursor": "^1.0.3",
@@ -37,6 +37,21 @@
     "react": "^16.7.0"
   },
   "devDependencies": {
+    "prosemirror-commands": "^1.0.7",
+    "prosemirror-dropcursor": "^1.1.1",
+    "prosemirror-gapcursor": "^1.0.3",
+    "prosemirror-history": "^1.0.3",
+    "prosemirror-inputrules": "^1.0.1",
+    "prosemirror-keymap": "^1.0.1",
+    "prosemirror-model": "^1.6.3",
+    "prosemirror-schema-basic": "^1.0.0",
+    "prosemirror-schema-list": "^1.0.1",
+    "prosemirror-state": "^1.2.2",
+    "prosemirror-tables": "^0.7.10",
+    "prosemirror-transform": "^1.1.3",
+    "prosemirror-utils": "^0.7.5",
+    "prosemirror-view": "^1.6.7",
+    "react": "^16.7.0",
     "@types/node": "^10.12.18",
     "@types/prosemirror-commands": "^1.0.1",
     "@types/prosemirror-dropcursor": "^1.0.0",
