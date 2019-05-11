@@ -4,7 +4,6 @@ import actions, { Actions } from './actions/Index';
 import Plugins from './plugins';
 import BuiltInSchema from './schema';
 import { EditorView } from 'prosemirror-view';
-import { EditorMethods } from './UI';
 
 require('./Editor.css');
 
@@ -17,8 +16,7 @@ interface IComponentState {
 interface IComponentProps {
 	editable: boolean,
 	className?: string,
-	children?: React.ReactNode,
-	//children: (editorFunctions: EditorMethods) => React.ReactNode | React.ReactNode
+	children?: React.ReactNode
 }
 
 /**
