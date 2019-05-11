@@ -4,8 +4,6 @@ import { wrapInList } from "prosemirror-schema-list";
 import BuiltInSchema from '../schema';
 import Action, { Command } from "./Action";
 
-
-
 export interface Actions {
     [key:string]: Action
 }

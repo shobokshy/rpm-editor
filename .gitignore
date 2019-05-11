@@ -1,7 +1,5 @@
 # Ignores compiled TypeScript files
-wwwroot/lib/**/*.js
-wwwroot/lib/**/*.map
-wwwroot/lib/**/*.ts
+lib/*
 
 # Logs
 logs
