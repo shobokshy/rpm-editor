@@ -82,7 +82,7 @@ export default class Action {
      * @param attrs is any attributes required by the underlying command if any
      * @returns true if active
      */
-    public isAcitve(attrs?: object): boolean {
+    public isActive(attrs?: object): boolean {
         if(this.editorState) {
             if(this.getType instanceof NodeType) return NodeIsActive(this.editorState, this.getType)
             if(this.getType instanceof MarkType) return MarkIsActive(this.editorState, this.getType)
