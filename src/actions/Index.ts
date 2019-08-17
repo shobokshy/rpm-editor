@@ -48,11 +48,11 @@ const actions: Actions = {
         type: BuiltInSchema.nodes.code_block
     }),
     bulletList: new Action({
-        command: () => setBlockType(BuiltInSchema.nodes.bullet_list),
+        command: () => wrapInList(BuiltInSchema.nodes.bullet_list),
         type: BuiltInSchema.nodes.bullet_list
     }),
     orderedList: new Action({
-        command: () => setBlockType(BuiltInSchema.nodes.ordered_list),
+        command: () => wrapInList(BuiltInSchema.nodes.ordered_list),
         type: BuiltInSchema.nodes.ordered_list
     }),
     blockquote: new Action({
