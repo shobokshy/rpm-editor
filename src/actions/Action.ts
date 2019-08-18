@@ -70,7 +70,7 @@ export default class Action {
      */ 
     public isDisabled(attrs?: object): boolean {
         if(this.editorState) {
-            return this.getCommand(attrs)(this.editorState)
+            return !this.getCommand(attrs)(this.editorState)
         } else {
             return true
         }
