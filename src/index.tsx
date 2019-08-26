@@ -4,4 +4,5 @@ import withEditorContext, {IEditorProps} from './EditorContextHOC';
 
 
 export { Editor, View, withEditorContext ,IEditorProps };
-export { default as actions } from "./actions/Index";
+export { default as actions } from "./actions/BuiltInActions";
+export { default as Action, Actions } from "./actions/Action";

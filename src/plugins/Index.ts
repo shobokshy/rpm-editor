@@ -4,7 +4,7 @@ import { history } from 'prosemirror-history';
 import { dropCursor } from "prosemirror-dropcursor";
 import { gapCursor } from "prosemirror-gapcursor";
 import KeyMap from "./KeyMap";
-import actions, { Actions } from "../actions/Index";
+import actions, { Actions } from "../actions/BuiltInActions";
 // import { EditorProps } from "prosemirror-view";
 
 export interface IPluginConfig {

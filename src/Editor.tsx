@@ -1,6 +1,6 @@
 import { EditorState, Transaction } from 'prosemirror-state';
 import * as React from 'react';
-import actions, { Actions } from './actions/Index';
+import { Actions } from './actions/BuiltInActions';
 import Plugins from './plugins';
 import BuiltInSchema from './schema';
 import { EditorView } from 'prosemirror-view';
@@ -15,6 +15,7 @@ interface IComponentState {
 
 interface IComponentProps {
 	editable: boolean,
+	actions: Actions,
 	className?: string,
 	children?: React.ReactNode
 }
@@ -86,13 +87,14 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 	 */
 	private getActions(editorState?: EditorState, dispatch?: DispatchTransaction): Actions {
 		if(editorState && dispatch) {
+			const actions = this.props.actions;
 			Object.keys(actions).forEach((action: string) => {
 				actions[action].addStateAndDispatch(editorState, dispatch)
 			});
 
 			return actions;
 		} else {
-			return actions;
+			return this.props.actions;
 		}
 	}
 

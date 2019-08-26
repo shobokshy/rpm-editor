@@ -8,7 +8,17 @@ export type Command = (state: EditorState, dispatch?: DispatchTransaction) => bo
 
 interface Spec {
     command: (...args: any) => Command
-    type?: NodeType | MarkType
+    type?: NodeType | MarkType,
+    shortcuts?: Shortcut[]
+}
+
+export interface Shortcut {
+    key: string,
+    attrs?: object
+}
+
+export interface Actions {
+    [key: string]: Action
 }
 
 /**
@@ -39,6 +49,15 @@ export default class Action {
      */
     get getCommand() {
         return this.spec.command
+    }
+
+    /**
+     * Get the keyboard shortcuts if any for this action
+     * @returns array of string shortcuts or undefined if no shortcut
+     */
+    get getShortcuts(): Shortcut[] {
+        if(this.spec.shortcuts) return this.spec.shortcuts
+        return [];
     }
 
     /** 
