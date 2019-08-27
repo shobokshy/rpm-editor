@@ -2,8 +2,8 @@ import { EditorState, Transaction } from 'prosemirror-state';
 import * as React from 'react';
 import { Actions } from './actions/BuiltInActions';
 import Plugins from './plugins';
-import BuiltInSchema from './schema';
 import { EditorView } from 'prosemirror-view';
+import { Schema } from 'prosemirror-model';
 
 require('./Editor.css');
 
@@ -16,6 +16,7 @@ interface IComponentState {
 interface IComponentProps {
 	editable: boolean,
 	actions: Actions,
+	schema: Schema,
 	className?: string,
 	children?: React.ReactNode
 }
@@ -55,11 +56,11 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 	 */
 	private createEditorState(): EditorState {
 		return EditorState.create({
-			schema: BuiltInSchema,
+			schema: this.props.schema,
 			doc: undefined,
 			plugins: [
 				...Plugins({
-					schema: BuiltInSchema,
+					schema: this.props.schema,
 					dispatchTransaction: this.dispatchTransaction.bind(this),
 					actions: this.getActions()
 				})
