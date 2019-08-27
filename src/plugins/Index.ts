@@ -3,6 +3,7 @@ import { Transaction, Plugin } from "prosemirror-state";
 import { history } from 'prosemirror-history';
 import { dropCursor } from "prosemirror-dropcursor";
 import { gapCursor } from "prosemirror-gapcursor";
+import { tableEditing, columnResizing } from "prosemirror-tables";
 import KeyMap from "./KeyMap";
 import actions, { Actions } from "../actions/BuiltInActions";
 // import { EditorProps } from "prosemirror-view";
@@ -21,6 +22,9 @@ export default (pluginConfig: IPluginConfig): Plugin[] => {
     plugins.push(history());
     plugins.push(dropCursor());
     plugins.push(gapCursor());
+    //@ts-ignore
+    plugins.push(columnResizing({lastColumnResizable: false}));
+    plugins.push(tableEditing());
 
 
     return plugins;
