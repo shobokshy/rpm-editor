@@ -3,6 +3,7 @@ import { EditorState } from "prosemirror-state";
 import { DispatchTransaction } from "../Editor";
 import NodeIsActive from "../utils/NodeIsActive";
 import MarkIsActive from "../utils/MarkIsActive";
+import { FriendlyShortcutString } from "../utils/FriendlyShortcutString";
 
 export type Command = (state: EditorState, dispatch?: DispatchTransaction) => boolean;
 
@@ -58,6 +59,15 @@ export default class Action {
     get getShortcuts(): Shortcut[] {
         if(this.spec.shortcuts) return this.spec.shortcuts
         return [];
+    }
+
+    /**
+     * Get first shortcut if any for this action
+     * @returns a friendly string for UI purposes
+     */
+    public getShortcut(): string | undefined {
+        const shortcut = this.spec.shortcuts ? this.spec.shortcuts[0] : undefined;
+        if (shortcut) return FriendlyShortcutString(shortcut);
     }
 
     /** 
