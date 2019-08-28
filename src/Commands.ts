@@ -1,5 +1,5 @@
 import { EditorState, Transaction } from "prosemirror-state";
-import { createTable, safeInsert } from "prosemirror-utils";
+import { createTable, safeInsert, addColumnAt, addRowAt, removeColumnAt, removeRowAt } from "prosemirror-utils";
 
 export const insertTable = ({columnCount = 3, rowCount = 3, withHeaderRow = true} : {columnCount?: number, rowCount?: number, withHeaderRow?: boolean} = {}) => {
     return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
@@ -7,6 +7,34 @@ export const insertTable = ({columnCount = 3, rowCount = 3, withHeaderRow = true
             const table = createTable(state.schema, rowCount, columnCount, withHeaderRow);
             dispatch(safeInsert(table)(state.tr).scrollIntoView());
         }
+        return true;
+    }
+}
+
+export const insertColumnAt = (index: number) => {
+    return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
+        if (dispatch) addColumnAt(index)(state.tr);
+        return true;
+    }
+}
+
+export const insertRowAt = (index: number) => {
+    return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
+        if (dispatch) addRowAt(index)(state.tr);
+        return true;
+    }
+}
+
+export const deleteColumnAt = (index: number) => {
+    return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
+        if (dispatch) removeColumnAt(index)(state.tr);
+        return true;
+    }
+}
+
+export const deleteRowAt = (index: number) => {
+    return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
+        if (dispatch) removeRowAt(index)(state.tr);
         return true;
     }
 }

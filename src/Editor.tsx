@@ -1,9 +1,10 @@
-import { EditorState, Transaction } from 'prosemirror-state';
+import { EditorState, Transaction, Plugin } from 'prosemirror-state';
 import * as React from 'react';
 import { Actions } from './actions/BuiltInActions';
-import Plugins from './plugins';
+import Plugins, { IPluginConfig } from './plugins';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
+import { enrichActions } from './utils/EnrichActions';
 
 require('./Editor.css');
 
@@ -16,6 +17,7 @@ interface IComponentState {
 interface IComponentProps {
 	editable: boolean,
 	actions: Actions,
+	plugins?: (pluginConfig: IPluginConfig) => Plugin[]
 	schema: Schema,
 	className?: string,
 	children?: React.ReactNode
@@ -42,6 +44,8 @@ const EditorContext = React.createContext<IEditorContext | null>(null);
 type DispatchTransaction = (tr: Transaction) => void
 
 class Editor extends React.Component<IComponentProps, IComponentState> {
+	private readonly pluginUIContainer: HTMLElement = document.createElement('div');
+
 	constructor(props: IComponentProps) {
 		super(props)
 		this.state = {
@@ -58,13 +62,7 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 		return EditorState.create({
 			schema: this.props.schema,
 			doc: undefined,
-			plugins: [
-				...Plugins({
-					schema: this.props.schema,
-					dispatchTransaction: this.dispatchTransaction.bind(this),
-					actions: this.getActions()
-				})
-			]
+			plugins: this.getPlugins()
 		});
 	}
 
@@ -82,18 +80,36 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 	}
 
 	/**
+	 * Gets an array of builtin plugins and user provided plugins
+	 * @returns an array of plugins
+	 */
+	private getPlugins(): Plugin[] {
+		const plugins: Plugin[] = [];
+		const userPlugins = this.props.plugins;
+
+		if (userPlugins) plugins.push(...userPlugins({
+			schema: this.props.schema,
+			dispatchTransaction: this.dispatchTransaction.bind(this),
+			actions: this.getActions()
+		}));
+
+		plugins.push(...Plugins({
+			schema: this.props.schema,
+			dispatchTransaction: this.dispatchTransaction.bind(this),
+			actions: this.getActions()
+		}));
+
+		return plugins;
+	}
+
+	/**
 	 * Get actions and enrich them with editor state & dispatch function on new state
 	 * @param editorState Editor's current state
 	 * @param dispatch a dispatch function that takes a transaction
 	 */
 	private getActions(editorState?: EditorState, dispatch?: DispatchTransaction): Actions {
 		if(editorState && dispatch) {
-			const actions = this.props.actions;
-			Object.keys(actions).forEach((action: string) => {
-				actions[action].addStateAndDispatch(editorState, dispatch)
-			});
-
-			return actions;
+			return enrichActions(this.props.actions, editorState, dispatch);
 		} else {
 			return this.props.actions;
 		}
