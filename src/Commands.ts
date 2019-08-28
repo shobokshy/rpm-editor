@@ -13,28 +13,28 @@ export const insertTable = ({columnCount = 3, rowCount = 3, withHeaderRow = true
 
 export const insertColumnAt = (index: number) => {
     return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
-        if (dispatch) addColumnAt(index)(state.tr);
+        if (dispatch) dispatch(addColumnAt(index)(state.tr));
         return true;
     }
 }
 
 export const insertRowAt = (index: number) => {
     return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
-        if (dispatch) addRowAt(index)(state.tr);
+        if (dispatch) dispatch(addRowAt(index)(state.tr));
         return true;
     }
 }
 
 export const deleteColumnAt = (index: number) => {
     return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
-        if (dispatch) removeColumnAt(index)(state.tr);
+        if (dispatch) dispatch(removeColumnAt(index)(state.tr));
         return true;
     }
 }
 
 export const deleteRowAt = (index: number) => {
     return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
-        if (dispatch) removeRowAt(index)(state.tr);
+        if (dispatch) dispatch(removeRowAt(index)(state.tr));
         return true;
     }
 }
