@@ -11,28 +11,28 @@ export const insertTable = ({columnCount = 3, rowCount = 3, withHeaderRow = true
     }
 }
 
-export const insertColumnAt = (index: number) => {
+export const insertColumnAt = ({ index }: { index: number }) => {
     return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
         if (dispatch) dispatch(addColumnAt(index)(state.tr));
         return true;
     }
 }
 
-export const insertRowAt = (index: number) => {
+export const insertRowAt = ({ index, clonePrevious = false }: { index: number, clonePrevious?: boolean }) => {
     return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
-        if (dispatch) dispatch(addRowAt(index)(state.tr));
+        if (dispatch) dispatch(addRowAt(index, clonePrevious)(state.tr));
         return true;
     }
 }
 
-export const deleteColumnAt = (index: number) => {
+export const deleteColumnAt = ({ index }: { index: number }) => {
     return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
         if (dispatch) dispatch(removeColumnAt(index)(state.tr));
         return true;
     }
 }
 
-export const deleteRowAt = (index: number) => {
+export const deleteRowAt = ({ index }: { index: number }) => {
     return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
         if (dispatch) dispatch(removeRowAt(index)(state.tr));
         return true;
