@@ -10,7 +10,8 @@ export type Command = (state: EditorState, dispatch?: DispatchTransaction) => bo
 interface Spec {
     command: (...args: any) => Command
     type?: NodeType | MarkType,
-    shortcuts?: Shortcut[]
+    shortcuts?: Shortcut[],
+    name?: string
 }
 
 export interface Shortcut {
@@ -48,8 +49,15 @@ export default class Action {
     /**
      * Get the underlying ProseMirror command
      */
-    get getCommand() {
+    get getCommand(): (...args: any) => Command {
         return this.spec.command
+    }
+
+    /**
+     * Get the action's name if available
+     */
+    get getName(): string | undefined {
+        return this.spec.name
     }
 
     /**
