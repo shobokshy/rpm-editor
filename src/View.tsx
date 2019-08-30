@@ -6,7 +6,7 @@ import { EditorContext } from './Editor';
 
 
 interface IComponentProps {
-
+    className?: string
 }
 
 interface IComponentState {
@@ -66,7 +66,7 @@ class View extends React.Component<IComponentProps,IComponentState> {
 
     render() {
         return (
-            <div ref={this.state.editorRef} />
+            <div className={this.props.className} ref={this.state.editorRef} />
         );
     }
 }

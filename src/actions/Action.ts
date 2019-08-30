@@ -16,7 +16,8 @@ interface Spec {
 
 export interface Shortcut {
     key: string,
-    attrs?: object
+    name?: string,
+    attrs?: any
 }
 
 export interface Actions {
@@ -92,7 +93,7 @@ export default class Action {
      * @param attrs is any attributes required by the underlying command if any
      * @returns true if succesfull, otherwise false
      */
-    public execute(attrs?: object): boolean {
+    public execute(attrs?: any): boolean {
         if(this.editorState && this.dispatch) {
             return this.getCommand(attrs)(this.editorState, this.dispatch)
         } else {
@@ -105,7 +106,7 @@ export default class Action {
      * @param attrs is any attributes required by the underlying command if any
      * @returns true if disabled
      */ 
-    public isDisabled(attrs?: object): boolean {
+    public isDisabled(attrs?: any): boolean {
         if(this.editorState) {
             return !this.getCommand(attrs)(this.editorState)
         } else {
@@ -119,7 +120,7 @@ export default class Action {
      * @param attrs is any attributes required by the underlying command if any
      * @returns true if active
      */
-    public isActive(attrs?: object): boolean {
+    public isActive(attrs?: any): boolean {
         if(this.editorState) {
             if(this.getType instanceof NodeType) return NodeIsActive(this.editorState, this.getType)
             if(this.getType instanceof MarkType) return MarkIsActive(this.editorState, this.getType)
