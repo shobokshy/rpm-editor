@@ -108,6 +108,7 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	 * @param tr Prosemirror Transaction
 	 */
 	const dispatchTransaction = (tr: Transaction): void => {
+		console.log(tr);
 		if (editorState) setEditorState(editorState.apply(tr));
 
 		// Get new steps that can be sent to collab server
@@ -115,9 +116,9 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	}
 
 	const getSendableSteps = () => {
-		if (editorState) {
+		if (editorState && props.collabOptions) {
 			const sendable = collab.sendableSteps(editorState);
-			if (props.collabOptions && sendable) props.collabOptions.onNewSendableSteps(sendable);
+			if (sendable) props.collabOptions.onNewSendableSteps(sendable);
 		}
 	}
 

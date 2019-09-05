@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { EditorView } from 'prosemirror-view';
+import { EditorView, DirectEditorProps } from 'prosemirror-view';
 import { withEditorContext } from './EditorContextHOC';
 import { EditorContext } from './Types';
 
@@ -23,9 +23,17 @@ const View: React.SFC<ViewProps> = (props) => {
     }, []);
 
     React.useEffect(() => {
-        if(editorView) editorView.updateState(props.editorState);
+        if(editorView) {
+            console.log(props.editorState);
+            editorView.updateState(props.editorState);
+        }
         focus();
     }, [props.editorState])
+
+    React.useEffect(() => {
+        reconfigureEditorView();
+        focus();
+    }, [props.editable])
 
     const createEditorView = () => {
         if (editorViewDOMRef) setEditorView(new EditorView(
@@ -37,6 +45,12 @@ const View: React.SFC<ViewProps> = (props) => {
             }
         ))
     } 
+
+    const reconfigureEditorView = () => {
+        if (editorView) editorView.setProps({
+            editable: () => props.editable
+        } as any);
+    }
 
     // Focus cursor to editor view
     const focus = () => {

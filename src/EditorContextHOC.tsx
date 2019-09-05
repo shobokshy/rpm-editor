@@ -16,7 +16,7 @@ export function withEditorContext<P extends EditorContext>(Component: React.Comp
     return function ComponentWithEditorContext(props: Pick<P, Exclude<keyof P, keyof EditorContext>>) {
         return (
             <ReactEditorContext.Consumer>
-                {context => <Component {...props as P} editorContext={context} />}
+                {context => <Component {...props as P} {...context} />}
             </ReactEditorContext.Consumer>
         );
     };
