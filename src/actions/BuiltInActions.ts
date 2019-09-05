@@ -11,7 +11,7 @@ export interface Actions {
 /**
  * A keyed object that contains all actions 
  */
-const actions: Actions = {
+export const actions: Actions = {
     // Misc
     chainCommands: new Action({
         command: (...commands: Command[]) => {
@@ -80,5 +80,3 @@ const actions: Actions = {
         name: 'Redo'
     }),
 };
-
-export default actions;

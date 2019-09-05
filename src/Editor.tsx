@@ -15,7 +15,7 @@ export interface EditorProps {
 	className?: string,
 	children?: React.ReactNode,
 
-	document: Node,
+	document?: Node,
 	editable: boolean,
 	actions: Actions,
 	plugins?: (pluginConfig: IPluginConfig) => Plugin[]

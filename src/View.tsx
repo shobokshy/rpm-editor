@@ -3,7 +3,6 @@ import { EditorView, DirectEditorProps } from 'prosemirror-view';
 import { withEditorContext } from './EditorContextHOC';
 import { EditorContext } from './Types';
 
-
 interface ViewProps extends EditorContext {
     className?: string
 }
