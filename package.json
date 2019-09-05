@@ -1,6 +1,6 @@
 {
   "name": "rpm-editor",
-  "version": "1.0.4",
+  "version": "2.0.0-alpha.0",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -24,6 +24,7 @@
   "author": "shobokshy",
   "license": "MIT",
   "peerDependencies": {
+    "prosemirror-collab": "^1.1.2",
     "prosemirror-commands": "^1.0.7",
     "prosemirror-dropcursor": "^1.1.1",
     "prosemirror-gapcursor": "^1.0.3",
@@ -42,6 +43,7 @@
   },
   "devDependencies": {
     "@types/node": "^10.12.18",
+    "@types/prosemirror-collab": "^1.0.2",
     "@types/prosemirror-commands": "^1.0.1",
     "@types/prosemirror-dropcursor": "^1.0.0",
     "@types/prosemirror-gapcursor": "^1.0.1",
@@ -57,6 +59,7 @@
     "@types/prosemirror-view": "^1.3.0",
     "@types/react": "^16.7.18",
     "@types/shelljs": "^0.8.1",
+    "prosemirror-collab": "^1.1.2",
     "prosemirror-commands": "^1.0.7",
     "prosemirror-dropcursor": "^1.1.1",
     "prosemirror-gapcursor": "^1.0.3",
@@ -77,5 +80,6 @@
     "ts-node": "^8.3.0",
     "tslib": "^1.9.3",
     "typescript": "^3.2.2"
-  }
+  },
+  "dependencies": {}
 }

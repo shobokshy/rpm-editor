@@ -1,10 +1,13 @@
 import { EditorState, Transaction, Plugin } from 'prosemirror-state';
+import { Node } from 'prosemirror-model';
 import * as React from 'react';
 import { Actions } from './actions/BuiltInActions';
 import Plugins, { IPluginConfig } from './plugins';
 import { EditorView } from 'prosemirror-view';
 import { Schema } from 'prosemirror-model';
 import { enrichActions } from './utils/EnrichActions';
+import * as collab from "prosemirror-collab";
+import { Step } from 'prosemirror-transform';
 
 require('./Editor.css');
 
@@ -15,12 +18,20 @@ interface IComponentState {
 }
 
 interface IComponentProps {
+	document: Node,
 	editable: boolean,
 	actions: Actions,
 	plugins?: (pluginConfig: IPluginConfig) => Plugin[]
 	schema: Schema,
 	className?: string,
-	children?: React.ReactNode
+	children?: React.ReactNode,
+	collabOptions?: {
+		version?: number,
+		onNewSendableSteps: (sendableSteps: {version: number, steps: Step<any>[], clientID: string | number, origins: Transaction<any>[];}) => void
+		setOnRecievedSteps: (onRecievedStepsFunction: (steps: Step[], clientIds: (number | string)[]) => void) => void
+	}
+	enableCollab?: boolean
+	collabVersion?: number
 }
 
 /**
@@ -55,13 +66,17 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 		}
 	}
 
+	componentDidMount() {
+		if (this.props.collabOptions) this.props.collabOptions.setOnRecievedSteps(this.onNewSteps)
+	}
+
 	/**
 	 * Create a new state for Prosemirror
 	 */
 	private createEditorState(): EditorState {
 		return EditorState.create({
 			schema: this.props.schema,
-			doc: undefined,
+			doc: this.props.document,
 			plugins: this.getPlugins()
 		});
 	}
@@ -73,10 +88,13 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 	private dispatchTransaction(tr: Transaction): void {
 		this.setState({
 			editorState: this.state.editorState.apply(tr)
-		},
+		}, () => {
 			// focus to the editor view on new transactions
-			this.focus
-		)
+			this.focus,
+
+			// Get new steps that can be sent to collab server
+			this.getSendableSteps
+		})
 	}
 
 	/**
@@ -99,6 +117,12 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 			actions: this.getActions()
 		}));
 
+		if (this.props.enableCollab) plugins.push(
+			collab.collab({
+				version: this.props.collabVersion || 0
+			})
+		)
+
 		return plugins;
 	}
 
@@ -117,6 +141,19 @@ class Editor extends React.Component<IComponentProps, IComponentState> {
 
 	private focus() {
 		if(this.state.editorView.current) this.state.editorView.current.focus();
+	}
+
+	private getSendableSteps() {
+		const sendable = collab.sendableSteps(this.state.editorState);
+		if (this.props.collabOptions && sendable) this.props.collabOptions.onNewSendableSteps(sendable);
+	}
+
+	private onNewSteps(steps: Step[], clientIds: (number | string)[] ) {
+		const self = this;
+		this.dispatchTransaction(
+			collab.receiveTransaction(self.state.editorState, steps, clientIds)
+		);
+		this.getSendableSteps()
 	}
 
 	public render() {
