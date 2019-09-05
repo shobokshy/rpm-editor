@@ -1,6 +1,6 @@
 import { Actions } from "..";
 import { EditorState } from "prosemirror-state";
-import { DispatchTransaction } from "../Editor";
+import { DispatchTransaction } from "../Types";
 
 export const enrichActions = (actions: Actions, state: EditorState, dispatch: DispatchTransaction) => {
     Object.keys(actions).forEach((action: string) => {

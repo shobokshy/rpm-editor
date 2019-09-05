@@ -1,8 +1,6 @@
 import { Actions } from "../actions/BuiltInActions";
 import { keymap } from "prosemirror-keymap";
 import { baseKeymap } from "prosemirror-commands";
-import { EditorState } from "prosemirror-state";
-import { DispatchTransaction } from "../Editor";
 import { Command } from "../actions/Action";
 
 interface Keys {

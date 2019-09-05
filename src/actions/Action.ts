@@ -1,9 +1,9 @@
 import { NodeType, MarkType } from "prosemirror-model";
 import { EditorState } from "prosemirror-state";
-import { DispatchTransaction } from "../Editor";
 import NodeIsActive from "../utils/NodeIsActive";
 import MarkIsActive from "../utils/MarkIsActive";
 import { FriendlyShortcutString } from "../utils/FriendlyShortcutString";
+import { DispatchTransaction } from "../Types";
 
 export type Command = (state: EditorState, dispatch?: DispatchTransaction) => boolean;
 

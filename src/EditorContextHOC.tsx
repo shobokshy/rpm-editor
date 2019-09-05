@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { IEditorContext, EditorContext } from './Editor';
+import { ReactEditorContext } from './Editor';
+import { EditorContext } from './Types';
 
 /**
  * HOC Typescript implementation copied from:
@@ -7,22 +8,16 @@ import { IEditorContext, EditorContext } from './Editor';
  * 
  */
 
-
-
-export interface IEditorProps {
-    editorContext: IEditorContext
-}
-
 /**
  * Injects a React component with the editor's context as a prop called editorContext
  * @param Component a React component
  */
-export default function withEditorContext<P extends IEditorProps>(Component: React.ComponentType<P>) {
-    return function ComponentWithEditorContext(props: Pick<P, Exclude<keyof P, keyof IEditorProps>>) {
+export function withEditorContext<P extends EditorContext>(Component: React.ComponentType<P>) {
+    return function ComponentWithEditorContext(props: Pick<P, Exclude<keyof P, keyof EditorContext>>) {
         return (
-            <EditorContext.Consumer>
+            <ReactEditorContext.Consumer>
                 {context => <Component {...props as P} editorContext={context} />}
-            </EditorContext.Consumer>
+            </ReactEditorContext.Consumer>
         );
     };
 }
