@@ -9,7 +9,8 @@ export interface EditorContext {
     editorState: EditorState,
     dispatchTransaction: DispatchTransaction,
     actions: Actions,
-    editable: boolean
+    editable: boolean,
+    debug?: boolean
 }
 
 export interface StepsInfo {

@@ -20,6 +20,7 @@ export interface EditorProps {
 	actions: Actions,
 	plugins?: (pluginConfig: IPluginConfig) => Plugin[]
 	schema: Schema,
+	debug?: boolean,
 	
 	collabOptions?: {
 		version?: number,
@@ -41,6 +42,11 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	React.useEffect(() => {
 		createEditorState();
 	}, [])
+
+	React.useEffect(() => {
+		// Get new steps that can be sent to collab server
+		getSendableSteps();
+	}, [editorState])
 
 	if (props.collabOptions) React.useEffect(() => {
 
@@ -108,11 +114,8 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	 * @param tr Prosemirror Transaction
 	 */
 	const dispatchTransaction = (tr: Transaction): void => {
-		console.log(tr);
+		if (editorState) console.log(tr);
 		if (editorState) setEditorState(editorState.apply(tr));
-
-		// Get new steps that can be sent to collab server
-		getSendableSteps();
 	}
 
 	const getSendableSteps = () => {
@@ -139,7 +142,8 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 							editorState: editorState,
 							dispatchTransaction: dispatchTransaction,
 							editable: props.editable,
-							actions: getActions(editorState, dispatchTransaction)
+							actions: getActions(editorState, dispatchTransaction),
+							debug: props.debug
 						}}
 					>
 						{props.children}
