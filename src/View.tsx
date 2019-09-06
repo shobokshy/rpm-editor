@@ -4,7 +4,6 @@ import { withEditorContext } from './EditorContextHOC';
 import { EditorContext } from './Types';
 import applyDevTools from "prosemirror-dev-tools"
 
-
 interface ViewProps extends EditorContext {
     className?: string
 }

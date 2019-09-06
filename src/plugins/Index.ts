@@ -5,7 +5,7 @@ import { dropCursor } from "prosemirror-dropcursor";
 import { gapCursor } from "prosemirror-gapcursor";
 import { tableEditing, columnResizing } from "prosemirror-tables";
 import KeyMap from "./KeyMap";
-import actions, { Actions } from "../actions/BuiltInActions";
+import { Actions } from "../actions/BuiltInActions";
 // import { EditorProps } from "prosemirror-view";
 
 export interface IPluginConfig {
