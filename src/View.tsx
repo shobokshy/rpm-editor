@@ -3,6 +3,7 @@ import { EditorView, DirectEditorProps } from 'prosemirror-view';
 import { withEditorContext } from './EditorContextHOC';
 import { EditorContext } from './Types';
 import applyDevTools from "prosemirror-dev-tools"
+import { Transaction } from 'prosemirror-state';
 
 interface ViewProps extends EditorContext {
     className?: string
@@ -10,7 +11,7 @@ interface ViewProps extends EditorContext {
 
 const View: React.SFC<ViewProps> = (props) => {
 
-    const editorViewDOMRef = React.useRef<any>(null);
+    const editorViewDOMRef = React.useRef<any>();
     const [editorView, setEditorView] = React.useState<EditorView>();
 
     React.useEffect(() => {
@@ -20,9 +21,8 @@ const View: React.SFC<ViewProps> = (props) => {
         }
     }, []);
 
-    React.useEffect(() => {
+    React.useLayoutEffect(() => {
         if (editorView) editorView.updateState(props.editorState);
-        if (editorView) console.log(editorView)
     }, [props.editorState])
 
     React.useEffect(() => {
@@ -47,10 +47,8 @@ const View: React.SFC<ViewProps> = (props) => {
 
     const reconfigureEditorView = () => {
         if (editorView) editorView.setProps({
-            editable: () => props.editable,
-            state: props.editorState,
-            dispatchTransaction: props.dispatchTransaction
-        });
+            editable: () => props.editable
+        } as any);
     }
 
     // Focus cursor to editor view
@@ -62,15 +60,11 @@ const View: React.SFC<ViewProps> = (props) => {
     const destroy = () => {
         if (editorView) editorView.destroy();
     }
-
-    console.log(editorView)
-
     
     return (
         <div className={props.className} ref={editorViewDOMRef} />
     );
     
 }
-
 
 export const ViewWithContext = withEditorContext(View);

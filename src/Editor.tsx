@@ -114,8 +114,7 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	 * @param tr Prosemirror Transaction
 	 */
 	const dispatchTransaction = (tr: Transaction): void => {
-		if (editorState) console.log(tr);
-		if (editorState) setEditorState(editorState.apply(tr));
+		setEditorState(state => state ? state.apply(tr) : undefined);
 	}
 
 	const getSendableSteps = () => {
