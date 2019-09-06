@@ -24,8 +24,9 @@ export interface EditorProps {
 	
 	collabOptions?: {
 		version?: number,
-		onNewSendableSteps: (sendableSteps: {version: number, steps: Step<any>[], clientID: string | number, origins: Transaction<any>[];}) => void
-		incomingSteps?: StepsInfo
+		onNewSendableSteps: (sendableSteps: {version: number, steps: Step<any>[], clientId: string | number, origins: Transaction<any>[];}) => void
+		incomingSteps?: StepsInfo,
+		currentVersion: (version: number) => void
 	}
 }
 
@@ -46,6 +47,8 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	React.useEffect(() => {
 		// Get new steps that can be sent to collab server
 		getSendableSteps();
+
+		if (props.collabOptions && editorState) props.collabOptions.currentVersion(collab.getVersion(editorState))
 	}, [editorState])
 
 	if (props.collabOptions) React.useEffect(() => {
@@ -120,7 +123,12 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	const getSendableSteps = () => {
 		if (editorState && props.collabOptions) {
 			const sendable = collab.sendableSteps(editorState);
-			if (sendable) props.collabOptions.onNewSendableSteps(sendable);
+			if (sendable) props.collabOptions.onNewSendableSteps({
+				version: sendable.version,
+				clientId: sendable.clientID,
+				steps: sendable.steps,
+				origins: sendable.origins
+			});
 		}
 	}
 
