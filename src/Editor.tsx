@@ -44,11 +44,11 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 		createEditorState();
 	}, [])
 
-	React.useEffect(() => {
+	React.useLayoutEffect(() => {
 		// Get new steps that can be sent to collab server
 		getSendableSteps();
 
-		if (props.collabOptions && editorState) props.collabOptions.currentVersion(collab.getVersion(editorState))
+		if (props.collabOptions && editorState) props.collabOptions.currentVersion(collab.getVersion(editorState));
 	}, [editorState])
 
 	if (props.collabOptions) React.useEffect(() => {
@@ -136,7 +136,6 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 		if (editorState) dispatchTransaction(
 			collab.receiveTransaction(editorState, incomingSteps.steps, incomingSteps.clientIds)
 		);
-		getSendableSteps()
 	}
 
 	
