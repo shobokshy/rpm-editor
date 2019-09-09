@@ -1,12 +1,13 @@
 import { Shortcut } from "../actions/Action";
 
 function captellize(str: string) {
-    var pieces = str.split(" ");
-    for (var i = 0; i < pieces.length; i++) {
-        var j = pieces[i].charAt(0).toUpperCase();
+    const pieces = str.split(/\s|-/);
+    for (let i = 0; i < pieces.length; i++) {
+        const j = pieces[i].charAt(0).toUpperCase();
         pieces[i] = j + pieces[i].substr(1).toLowerCase();
     }
-    return pieces.join(" ");
+    const string = pieces.join("-");
+    return string.replace('Mod', 'Ctrl') //TODO: Detect OS and use appropriate key
 }
 
 export const FriendlyShortcutString = function(shortcut: Shortcut): string {
