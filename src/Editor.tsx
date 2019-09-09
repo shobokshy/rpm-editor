@@ -45,10 +45,12 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	}, [])
 
 	React.useLayoutEffect(() => {
+		if (props.collabOptions && editorState) props.collabOptions.currentVersion(collab.getVersion(editorState));
+	}, [editorState])
+
+	React.useEffect(() => {
 		// Get new steps that can be sent to collab server
 		getSendableSteps();
-
-		if (props.collabOptions && editorState) props.collabOptions.currentVersion(collab.getVersion(editorState));
 	}, [editorState])
 
 	if (props.collabOptions) React.useEffect(() => {
