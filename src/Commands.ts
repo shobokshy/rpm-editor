@@ -1,6 +1,16 @@
 import { EditorState, Transaction } from "prosemirror-state";
 import { createTable, safeInsert, addColumnAt, addRowAt, removeColumnAt, removeRowAt, removeTable } from "prosemirror-utils";
 
+export const insertImage = ({src = ""} : {src?: string} = {}) => {
+    return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
+        if(dispatch) {
+            const image = state.schema.nodes.image.create({src});
+            dispatch(state.tr.insert(state.selection.$anchor.pos, image));
+        }
+        return true;
+    }
+}
+
 export const insertTable = ({columnCount = 3, rowCount = 3, withHeaderRow = true} : {columnCount?: number, rowCount?: number, withHeaderRow?: boolean} = {}) => {
     return (state: EditorState, dispatch?: (tr: Transaction) => void) => {
         if (dispatch) {

@@ -24,7 +24,7 @@ export interface EditorProps {
 	
 	collabOptions?: {
 		version?: number,
-		onNewSendableSteps: (sendableSteps: {version: number, steps: Step<any>[], clientId: string | number, origins: Transaction<any>[];}) => void
+		onNewSendableSteps: (sendableSteps: {version: number, steps: Step<any>[], clientId: string | number, origins: Transaction<any>[];}) => void,
 		incomingSteps?: StepsInfo,
 		currentVersion: (version: number) => void
 	}
@@ -45,15 +45,16 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	}, [])
 
 	React.useLayoutEffect(() => {
+		// Set the current report editor collab version
 		if (props.collabOptions && editorState) props.collabOptions.currentVersion(collab.getVersion(editorState));
-	}, [editorState])
+	}, [editorState, props.collabOptions])
 
-	React.useEffect(() => {
+	React.useLayoutEffect(() => {
 		// Get new steps that can be sent to collab server
-		getSendableSteps();
+		if (editorState) getSendableSteps(editorState);
 	}, [editorState])
 
-	if (props.collabOptions) React.useEffect(() => {
+	if (props.collabOptions) React.useLayoutEffect(() => {
 
 		if (props.collabOptions && props.collabOptions.incomingSteps) onNewSteps(props.collabOptions.incomingSteps);
 
@@ -122,9 +123,10 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 		setEditorState(state => state ? state.apply(tr) : undefined);
 	}
 
-	const getSendableSteps = () => {
-		if (editorState && props.collabOptions) {
-			const sendable = collab.sendableSteps(editorState);
+	const getSendableSteps = (state: EditorState) => {
+		if (props.collabOptions) {
+			console.log('sending data')
+			const sendable = collab.sendableSteps(state);
 			if (sendable) props.collabOptions.onNewSendableSteps({
 				version: sendable.version,
 				clientId: sendable.clientID,

@@ -4,7 +4,7 @@ export { withEditorContext } from './EditorContextHOC';
 export { DispatchTransaction, EditorContext, StepsInfo } from './Types';
 export { enrichActions } from "./utils/EnrichActions";
 export { IPluginConfig } from "./plugins";
-export { insertTable } from "./Commands";
+export { insertTable, insertImage } from "./Commands";
 export { makeRenderable } from "./utils/MakeRenderable";
 
 export { actions as BuiltInActions } from "./actions/BuiltInActions";
