@@ -23,6 +23,7 @@ const View: React.SFC<ViewProps> = (props) => {
 
     React.useLayoutEffect(() => {
         if (editorView) editorView.updateState(props.editorState);
+        focus();
     }, [props.editorState])
 
     React.useEffect(() => {
