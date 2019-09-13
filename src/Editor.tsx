@@ -12,6 +12,7 @@ import { StepsInfo, EditorContext, DispatchTransaction } from './Types';
 require('./Editor.css');
 
 export interface EditorProps {
+	id: string,
 	className?: string,
 	children?: React.ReactNode,
 
@@ -42,7 +43,7 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 
 	React.useEffect(() => {
 		createEditorState();
-	}, [])
+	}, [props.id])
 
 	React.useLayoutEffect(() => {
 		// Set the current report editor collab version
