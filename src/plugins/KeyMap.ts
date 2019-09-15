@@ -1,7 +1,7 @@
 import { Actions } from "../actions/BuiltInActions";
 import { keymap } from "prosemirror-keymap";
 import { baseKeymap } from "prosemirror-commands";
-import { Command } from "../actions/Action";
+import { Command } from "../Types";
 
 interface Keys {
     [key:string]: Command;

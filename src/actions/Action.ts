@@ -2,26 +2,14 @@ import { NodeType, MarkType } from "prosemirror-model";
 import { EditorState } from "prosemirror-state";
 import NodeIsActive from "../utils/NodeIsActive";
 import MarkIsActive from "../utils/MarkIsActive";
-import { FriendlyShortcutString } from "../utils/FriendlyShortcutString";
-import { DispatchTransaction } from "../Types";
-
-export type Command = (state: EditorState, dispatch?: DispatchTransaction) => boolean;
+import { DispatchTransaction, Command } from "../Types";
+import Shortcut from "./Shortcut";
 
 interface Spec {
-    command: (...args: any) => Command
+    command: (...args: any) => Command,
     type?: NodeType | MarkType,
     shortcuts?: Shortcut[],
     name?: string
-}
-
-export interface Shortcut {
-    key: string,
-    name?: string,
-    attrs?: any
-}
-
-export interface Actions {
-    [key: string]: Action
 }
 
 /**
@@ -63,20 +51,11 @@ export default class Action {
 
     /**
      * Get the keyboard shortcuts if any for this action
-     * @returns array of string shortcuts or undefined if no shortcut
+     * @returns array of string shortcuts or an empty array if not any
      */
     get getShortcuts(): Shortcut[] {
         if(this.spec.shortcuts) return this.spec.shortcuts
         return [];
-    }
-
-    /**
-     * Get first shortcut if any for this action
-     * @returns a friendly string for UI purposes
-     */
-    public getShortcut(): string | undefined {
-        const shortcut = this.spec.shortcuts ? this.spec.shortcuts[0] : undefined;
-        if (shortcut) return FriendlyShortcutString(shortcut);
     }
 
     /** 

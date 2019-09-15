@@ -1,5 +1,5 @@
 import { EditorState, Transaction } from "prosemirror-state";
-import { Actions } from "./actions/Action";
+import Action from "./actions/Action";
 import { Step } from "prosemirror-transform";
 
 /**
@@ -23,4 +23,10 @@ export interface StepsInfo {
 /**
  * A function that takes a transaction as an input and applies that transaction to the editor's state
  */
-export type DispatchTransaction = (tr: Transaction) => void
+export type DispatchTransaction = (tr: Transaction) => void;
+
+export interface Actions {
+    [key: string]: Action
+}
+
+export type Command = (state: EditorState, dispatch?: DispatchTransaction) => boolean;

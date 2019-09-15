@@ -1,11 +1,11 @@
 export { ViewWithContext as View } from './View';
 export { Editor } from './Editor';
 export { withEditorContext } from './EditorContextHOC';
-export { DispatchTransaction, EditorContext, StepsInfo } from './Types';
+export { DispatchTransaction, EditorContext, StepsInfo, Actions, Command } from './Types';
 export { enrichActions } from "./utils/EnrichActions";
-export { IPluginConfig } from "./plugins";
+export { PluginConfig } from "./plugins";
 export { insertTable, insertImage } from "./Commands";
 export { makeRenderable } from "./utils/MakeRenderable";
 
 export { actions as BuiltInActions } from "./actions/BuiltInActions";
-export { default as Action, Actions } from "./actions/Action";
+export { default as Action } from "./actions/Action";

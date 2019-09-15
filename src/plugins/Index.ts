@@ -8,14 +8,14 @@ import KeyMap from "./KeyMap";
 import { Actions } from "../actions/BuiltInActions";
 // import { EditorProps } from "prosemirror-view";
 
-export interface IPluginConfig {
+export interface PluginConfig {
     schema: Schema,
     dispatchTransaction: (tr: Transaction) => void,
     actions: Actions
     // editorProps: EditorProps
 }
 
-export default (pluginConfig: IPluginConfig): Plugin[] => {
+export default (pluginConfig: PluginConfig): Plugin[] => {
     const plugins: Plugin[] = [];
 
     plugins.push(KeyMap(pluginConfig.actions));
