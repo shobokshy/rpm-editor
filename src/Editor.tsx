@@ -2,7 +2,7 @@ import { EditorState, Transaction, Plugin } from 'prosemirror-state';
 import { Node } from 'prosemirror-model';
 import * as React from 'react';
 import { Actions } from './actions/BuiltInActions';
-import Plugins, { IPluginConfig } from './plugins';
+import Plugins, { PluginConfig } from './plugins';
 import { Schema } from 'prosemirror-model';
 import { enrichActions } from './utils/EnrichActions';
 import * as collab from "prosemirror-collab";
@@ -19,7 +19,7 @@ export interface EditorProps {
 	document?: Node,
 	editable: boolean,
 	actions: Actions,
-	plugins?: (pluginConfig: IPluginConfig) => Plugin[]
+	plugins?: (pluginConfig: PluginConfig) => Plugin[]
 	schema: Schema,
 	debug?: boolean,
 	

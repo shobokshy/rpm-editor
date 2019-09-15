@@ -2,7 +2,8 @@ import { chainCommands, setBlockType, toggleMark, wrapIn } from "prosemirror-com
 import { redo, undo } from "prosemirror-history";
 import { wrapInList } from "prosemirror-schema-list";
 import BuiltInSchema from '../schema';
-import Action, { Command } from "./Action";
+import Action from "./Action";
+import { Command } from "../Types";
 
 export interface Actions {
     [key:string]: Action
