@@ -36,7 +36,6 @@ export interface EditorProps {
  */
 export const ReactEditorContext = React.createContext<EditorContext | null>(null);
 
-
 export const Editor: React.SFC<EditorProps> = (props) => {
 
 	const [editorState, setEditorState] = React.useState<EditorState>();
