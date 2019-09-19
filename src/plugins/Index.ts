@@ -6,10 +6,11 @@ import { gapCursor } from "prosemirror-gapcursor";
 import { tableEditing, columnResizing } from "prosemirror-tables";
 import KeyMap from "./KeyMap";
 import { Actions } from "../actions/BuiltInActions";
-// import { EditorProps } from "prosemirror-view";
+import { EditableState } from "./EditableState";
 
 export interface PluginConfig {
     schema: Schema,
+    editable: boolean,
     dispatchTransaction: (tr: Transaction) => void,
     actions: Actions
     // editorProps: EditorProps
@@ -18,6 +19,7 @@ export interface PluginConfig {
 export default (pluginConfig: PluginConfig): Plugin[] => {
     const plugins: Plugin[] = [];
 
+    plugins.push(EditableState(pluginConfig));
     plugins.push(KeyMap(pluginConfig.actions));
     plugins.push(history());
     plugins.push(dropCursor());

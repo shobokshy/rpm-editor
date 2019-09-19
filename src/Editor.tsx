@@ -84,13 +84,15 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 		if (userPlugins) plugins.push(...userPlugins({
 			schema: props.schema,
 			dispatchTransaction: dispatchTransaction,
-			actions: getActions()
+			actions: getActions(),
+			editable: props.editable
 		}));
 
 		plugins.push(...Plugins({
 			schema: props.schema,
 			dispatchTransaction: dispatchTransaction,
-			actions: getActions()
+			actions: getActions(),
+			editable: props.editable
 		}));
 
 		if (props.collabOptions) plugins.push(
@@ -125,7 +127,6 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 
 	const getSendableSteps = (state: EditorState) => {
 		if (props.collabOptions) {
-			console.log('sending data')
 			const sendable = collab.sendableSteps(state);
 			if (sendable) props.collabOptions.onNewSendableSteps({
 				version: sendable.version,
@@ -162,5 +163,4 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 			)}
 		</React.Fragment>
 	);
-	
 }
