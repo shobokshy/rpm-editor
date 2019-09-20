@@ -22,7 +22,10 @@ export default (pluginConfig: PluginConfig): Plugin[] => {
     plugins.push(EditableState(pluginConfig));
     plugins.push(KeyMap(pluginConfig.actions));
     plugins.push(history());
-    plugins.push(dropCursor());
+    plugins.push(dropCursor({
+        //@ts-ignore
+        class: "rpm-drop-cursor"
+    }));
     plugins.push(gapCursor());
     //@ts-ignore
     plugins.push(columnResizing({lastColumnResizable: false}));
