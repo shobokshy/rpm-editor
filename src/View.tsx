@@ -3,7 +3,6 @@ import { EditorView, DirectEditorProps } from 'prosemirror-view';
 import { withEditorContext } from './EditorContextHOC';
 import { EditorContext } from './Types';
 import applyDevTools from "prosemirror-dev-tools"
-import { Transaction } from 'prosemirror-state';
 import { editableStatePluginKey } from './plugins/EditableState';
 
 interface ViewProps extends EditorContext {
@@ -63,7 +62,7 @@ const View: React.SFC<ViewProps> = (props) => {
 
     // Focus cursor to editor view
     const focus = () => {
-        if (editorView) editorView.focus();
+        if (editorView && !editorView.hasFocus()) editorView.focus();
     }
 
     // Destroy editor view

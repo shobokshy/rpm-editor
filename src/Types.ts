@@ -6,6 +6,7 @@ import { Step } from "prosemirror-transform";
  * Interface for the editor's context
  */
 export interface EditorContext {
+    id: string | number,
     editorState: EditorState,
     dispatchTransaction: DispatchTransaction,
     actions: Actions,

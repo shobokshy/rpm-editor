@@ -9,7 +9,7 @@ export class EditableStateDispatcher {
 
     on(cb: (state: boolean) => void) {
         return this.subject.subscribe({
-            next: (state) => cb(state)
+            next: (state: any) => cb(state)
         })
     }
 

@@ -6,29 +6,24 @@ import Plugins, { PluginConfig } from './plugins';
 import { Schema } from 'prosemirror-model';
 import { enrichActions } from './utils/EnrichActions';
 import * as collab from "prosemirror-collab";
-import { Step } from 'prosemirror-transform';
-import { StepsInfo, EditorContext, DispatchTransaction } from './Types';
+import { EditorContext, DispatchTransaction } from './Types';
+import { InputRule } from 'prosemirror-inputrules';
 
 require('./Editor.css');
 
 export interface EditorProps {
-	id: string,
+	id: string | number,
 	className?: string,
 	children?: React.ReactNode,
 
 	document?: Node,
 	editable: boolean,
 	actions: Actions,
-	plugins?: (pluginConfig: PluginConfig) => Plugin[]
+	plugins?: (pluginConfig: PluginConfig) => Plugin[],
+	inputRules?: InputRule[],
 	schema: Schema,
 	debug?: boolean,
-	
-	collabOptions?: {
-		version?: number,
-		onNewSendableSteps: (sendableSteps: {version: number, steps: Step<any>[], clientId: string | number, origins: Transaction<any>[];}) => void,
-		incomingSteps?: StepsInfo,
-		currentVersion: (version: number) => void
-	}
+	collabVersion?: number
 }
 
 /**
@@ -43,22 +38,6 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	React.useEffect(() => {
 		createEditorState();
 	}, [props.id])
-
-	React.useLayoutEffect(() => {
-		// Set the current report editor collab version
-		if (props.collabOptions && editorState) props.collabOptions.currentVersion(collab.getVersion(editorState));
-	}, [editorState, props.collabOptions])
-
-	React.useLayoutEffect(() => {
-		// Get new steps that can be sent to collab server
-		if (editorState) getSendableSteps(editorState);
-	}, [editorState])
-
-	if (props.collabOptions) React.useLayoutEffect(() => {
-
-		if (props.collabOptions && props.collabOptions.incomingSteps) onNewSteps(props.collabOptions.incomingSteps);
-
-	}, [props.collabOptions.incomingSteps])
 
 	/**
 	 * Get actions and enrich them with editor state & dispatch function on new state
@@ -85,19 +64,21 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 			schema: props.schema,
 			dispatchTransaction: dispatchTransaction,
 			actions: getActions(),
-			editable: props.editable
+			editable: props.editable,
+			inputRules: props.inputRules
 		}));
 
 		plugins.push(...Plugins({
 			schema: props.schema,
 			dispatchTransaction: dispatchTransaction,
 			actions: getActions(),
-			editable: props.editable
+			editable: props.editable,
+			inputRules: props.inputRules
 		}));
 
-		if (props.collabOptions) plugins.push(
+		plugins.push(
 			collab.collab({
-				version: props.collabOptions.version || 0
+				version: props.collabVersion || 0
 			})
 		)
 
@@ -124,25 +105,6 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	const dispatchTransaction = (tr: Transaction): void => {
 		setEditorState(state => state ? state.apply(tr) : undefined);
 	}
-
-	const getSendableSteps = (state: EditorState) => {
-		if (props.collabOptions) {
-			const sendable = collab.sendableSteps(state);
-			if (sendable) props.collabOptions.onNewSendableSteps({
-				version: sendable.version,
-				clientId: sendable.clientID,
-				steps: sendable.steps,
-				origins: sendable.origins
-			});
-		}
-	}
-
-	const onNewSteps = (incomingSteps: StepsInfo) => {
-		if (editorState) dispatchTransaction(
-			collab.receiveTransaction(editorState, incomingSteps.steps, incomingSteps.clientIds)
-		);
-	}
-
 	
 	return (
 		<React.Fragment>
@@ -150,6 +112,7 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 				<div className={props.className ? props.className : "rpm-editor"}>
 					<ReactEditorContext.Provider
 						value={{
+							id: props.id,
 							editorState: editorState,
 							dispatchTransaction: dispatchTransaction,
 							editable: props.editable,
