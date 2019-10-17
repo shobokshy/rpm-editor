@@ -5,23 +5,33 @@ import { withEditorContext } from './EditorContextHOC';
 import { Step } from 'prosemirror-transform';
 import { Transaction, EditorState } from 'prosemirror-state';
 import { Schema } from 'prosemirror-model';
+import throttle = require('lodash.throttle');
 
 export interface CollabManagerConfig {
     onIncomingSteps: (cb: () => void) => void;
-    onSendableSteps: (id: string | number, sendableSteps: { version: number, steps: Step < any > [], clientId: string | number, origins: Transaction < any > [] }) => void;
+    onSendableSteps: (id: string | number, sendableSteps: { version: number, steps: Step < any > [], clientId: string | number, origins?: Transaction < any > [] }) => void;
     getNewSteps: (id: string | number, version: number, schema: Schema, cb: (steps: StepsInfo) => void) => void;
 }
 
 interface CollabManagerComponentProps extends EditorContext {
-    config: CollabManagerConfig
+    config: CollabManagerConfig,
+    throttleWait?: number
 }
 
 const CollabManagerComponent: React.FC<CollabManagerComponentProps> = (props) => {
 
     const editorState = React.useRef<EditorState>(props.editorState);
+    const sendThrottled = React.useRef(throttle(() => {
+            sendSteps()
+        }, props.throttleWait || 1000)
+    );
 
     React.useEffect(() => {
         listenForSteps();
+
+        return () => {
+            getSendableSteps(true)
+        }
     }, [])
 
     React.useEffect(() => {
@@ -50,15 +60,22 @@ const CollabManagerComponent: React.FC<CollabManagerComponentProps> = (props) =>
         })
     }
 
-    const getSendableSteps = () => {
-        const sendable = collab.sendableSteps(props.editorState);
+    const sendSteps = () => {
+        const sendable = collab.sendableSteps(editorState.current);
 
         if (sendable) props.config.onSendableSteps(props.id, {
             version: sendable.version,
             clientId: sendable.clientID,
-            steps: sendable.steps,
-            origins: sendable.origins
+            steps: sendable.steps
         });
+    }
+
+    const getSendableSteps = (unthrottled?: boolean) => {
+        if (unthrottled) {
+            sendSteps();
+        } else {
+            sendThrottled.current();
+        }
     }
 
 

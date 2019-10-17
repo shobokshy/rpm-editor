@@ -1,6 +1,6 @@
 {
   "name": "rpm-editor",
-  "version": "2.0.0-alpha.12",
+  "version": "2.0.0-alpha.13",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -43,6 +43,7 @@
     "react-dom": "^16.8.0"
   },
   "devDependencies": {
+    "@types/lodash.throttle": "^4.1.6",
     "@types/node": "^10.12.18",
     "@types/prosemirror-collab": "^1.0.2",
     "@types/prosemirror-commands": "^1.0.1",
@@ -87,6 +88,7 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
+    "lodash.throttle": "^4.1.1",
     "rxjs": "^6.5.3"
   }
 }
