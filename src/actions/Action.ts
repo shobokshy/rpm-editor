@@ -2,6 +2,7 @@ import { NodeType, MarkType } from "prosemirror-model";
 import { EditorState } from "prosemirror-state";
 import NodeIsActive from "../utils/NodeIsActive";
 import MarkIsActive from "../utils/MarkIsActive";
+import GetSelectedMarksAttrs from "../utils/GetSelectedMarksAttrs";
 import { DispatchTransaction, Command } from "../Types";
 import Shortcut from "./Shortcut";
 
@@ -106,6 +107,20 @@ export default class Action {
             return false
         } else {
             return false
+        }
+    }
+
+    /**
+     * Get the attributes of this action that are applied at current editor selection.
+     * Requires that this action has a type associated with it of Mark
+     * @returns an array of attributes
+     */
+    public getSelectedAttributes(): { [key: string]: any; }[] {
+        if (this.editorState) {
+            if (this.getType instanceof MarkType) return GetSelectedMarksAttrs(this.editorState, this.getType)
+            return []
+        } else {
+            return []
         }
     }
 }
