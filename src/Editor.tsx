@@ -1,4 +1,4 @@
-import { EditorState, Transaction, Plugin } from 'prosemirror-state';
+import { EditorState, Transaction, Plugin, PluginKey } from 'prosemirror-state';
 import { Node } from 'prosemirror-model';
 import * as React from 'react';
 import { Actions } from './actions/BuiltInActions';
@@ -34,10 +34,16 @@ export const ReactEditorContext = React.createContext<EditorContext | null>(null
 export const Editor: React.SFC<EditorProps> = (props) => {
 
 	const [editorState, setEditorState] = React.useState<EditorState>();
+	const isInitialRender = React.useRef<boolean>(true);
 
 	React.useEffect(() => {
 		createEditorState();
 	}, [props.id])
+
+	React.useLayoutEffect(() => {
+		if (!isInitialRender.current) reConfigureEditor()
+		isInitialRender.current = false;
+	}, [props.editable])
 
 	/**
 	 * Get actions and enrich them with editor state & dispatch function on new state
@@ -56,7 +62,7 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	 * Gets an array of builtin plugins and user provided plugins
 	 * @returns an array of plugins
 	 */
-	const getPlugins = (): Plugin[] => {
+	const getPlugins = (excludeCollab?: boolean): Plugin[] => {
 		const plugins: Plugin[] = [];
 		const userPlugins = props.plugins;
 
@@ -76,7 +82,7 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 			inputRules: props.inputRules
 		}));
 
-		plugins.push(
+		if (!excludeCollab) plugins.push(
 			collab.collab({
 				version: props.collabVersion || 0
 			})
@@ -89,6 +95,7 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	 * Create a new state for Prosemirror
 	 */
 	const createEditorState = () => {
+		console.log('init')
 		setEditorState(
 			EditorState.create({
 				schema: props.schema,
@@ -96,6 +103,32 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 				plugins: getPlugins()
 			})
 		)
+	}
+
+	const reConfigureEditor = () => {
+		console.log('reconf')
+		console.log(getPlugins(true))
+		setEditorState((state) => {
+			if(state) return state.reconfigure({
+				plugins: [
+					...getPlugins(true).filter((plugin) => {
+						if (plugin.spec.key) {
+							//@ts-ignore
+							return plugin.key != "tableColumnResizing$"
+						} else { return true}
+					}),
+					...state.plugins.filter((plugin) => {
+						if (plugin.spec.key) {
+							//@ts-ignore
+							return plugin.key === "tableColumnResizing$"
+						} else { return false }
+					}),
+					collab.collab({
+						version: collab.getVersion(state)
+					})
+				]
+			})
+		})
 	}
 
 	/**

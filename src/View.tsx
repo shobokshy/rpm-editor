@@ -26,7 +26,7 @@ const View: React.SFC<ViewProps> = (props) => {
         focus();
     }, [props.editorState])
 
-    React.useEffect(() => {
+    React.useLayoutEffect(() => {
         reconfigureEditorView();
         broadcastIsEditable();
         focus();
@@ -56,8 +56,9 @@ const View: React.SFC<ViewProps> = (props) => {
 
     const reconfigureEditorView = () => {
         if (editorView) editorView.setProps({
-            editable: () => props.editable
-        } as any);
+            editable: () => props.editable,
+            state: props.editorState
+        });
     }
 
     // Focus cursor to editor view

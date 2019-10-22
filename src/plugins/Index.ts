@@ -21,8 +21,6 @@ export interface PluginConfig {
 
 export default (pluginConfig: PluginConfig): Plugin[] => {
     const plugins: Plugin[] = [];
-
-    
     
 
     plugins.push(EditableState(pluginConfig));

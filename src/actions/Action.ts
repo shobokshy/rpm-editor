@@ -8,10 +8,11 @@ import Shortcut from "./Shortcut";
 
 interface Spec {
     command: (...args: any) => Command,
-    type?: NodeType | MarkType,
+    type?: NodeType | MarkType | (NodeType | MarkType)[],
     shortcuts?: Shortcut[],
     name?: string
 }
+
 
 /**
  * A class that defines what an Action is.
@@ -32,7 +33,7 @@ export default class Action {
      * Get the schema type this action affects. Could be a node or a mark
      * @returns undefined if this action doesn't affect any specific node/mark. Like undo,redo and chainCommands
      */
-    get getType(): NodeType | MarkType | undefined {
+    get getType(): NodeType | MarkType | (NodeType | MarkType)[] | undefined {
         return this.spec.type
     }
 
@@ -101,9 +102,22 @@ export default class Action {
      * @returns true if active
      */
     public isActive(attrs?: any): boolean {
+        const self = this;
         if(this.editorState) {
-            if(this.getType instanceof NodeType) return NodeIsActive(this.editorState, this.getType)
-            if(this.getType instanceof MarkType) return MarkIsActive(this.editorState, this.getType)
+            if(this.getType instanceof NodeType) return NodeIsActive(this.editorState, this.getType, attrs);
+            if(this.getType instanceof MarkType) return MarkIsActive(this.editorState, this.getType);
+
+            if(this.getType instanceof Array) {
+                const activeArray: boolean[] = [];
+                this.getType.forEach(type => {
+                    if (this.editorState) {
+                        if (type instanceof NodeType) activeArray.push(NodeIsActive(this.editorState, type, attrs))
+                        if (type instanceof MarkType) activeArray.push(MarkIsActive(this.editorState, type))
+                    }   
+                })
+
+                return activeArray.some(active => active === true);
+            }
             return false
         } else {
             return false
