@@ -1,6 +1,6 @@
 import { Actions } from "../actions/BuiltInActions";
 import { keymap } from "prosemirror-keymap";
-import { baseKeymap } from "prosemirror-commands";
+import { baseKeymap, chainCommands } from "prosemirror-commands";
 import { Command } from "../Types";
 
 interface Keys {
@@ -15,7 +15,11 @@ export default (actions: Actions) => {
         const action = actions[actionKey];
         const shortcuts = action.getShortcuts;
         shortcuts.forEach((shortcut) => {
-            keys[shortcut.key] = action.getCommand(shortcut.attrs)
+            if (keys[shortcut.key]) {
+                keys[shortcut.key] = chainCommands(keys[shortcut.key], action.getCommand(shortcut.attrs))
+            } else {
+                keys[shortcut.key] = action.getCommand(shortcut.attrs)
+            }
         })
     });
     
@@ -61,7 +65,7 @@ export default (actions: Actions) => {
     // Add existing basemap keys to our custom set of keys
     Object.keys(baseKeymap).forEach((key: string) => {
         if (keys[key]) {
-            keys[key] = actions.chainactions.getCommand(keys[key], baseKeymap[key])
+            keys[key] = chainCommands(keys[key], baseKeymap[key])
         } else {
             keys[key] = baseKeymap[key]
         }
