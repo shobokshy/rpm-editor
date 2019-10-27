@@ -16,6 +16,7 @@ const generateUUID = (): string => {
 
 export class ReactNodeView implements NodeView {
     dom: HTMLElement;
+    attrs?: any;
     private readonly key: string;
     readonly view: EditorView;
     node: Node;
@@ -27,13 +28,15 @@ export class ReactNodeView implements NodeView {
         node: Node,
         view: EditorView<any>,
         pluginConfig: PluginConfig,
-        getPos: () => number
+        getPos: () => number,
+        attrs?: any
     ) {
         this.key = key;
         this.node = node;
         this.view = view;
         this.pluginConfig = pluginConfig;
         this.getPos = getPos;
+        this.attrs = attrs;
 
         this.init();
     }
@@ -61,6 +64,15 @@ export class ReactNodeView implements NodeView {
     }
 
     /**
+     * Update this view's attributes. This will trigger a re-render for the react component
+     * @param attrs An attrs object which will be passed to the reactComponent() method
+     */
+    updateAttrs(attrs: any) {
+        this.attrs = attrs;
+        this.renderReactComponent()
+    }
+
+    /**
      * Method that is used to create the DOM element where the react component is going to sit in.
      */
     createDOMElement(): HTMLElement {
@@ -70,11 +82,11 @@ export class ReactNodeView implements NodeView {
     /**
      * Method that returns a react component that will be used to render
      */
-    reactComponent(): React.ReactElement {
+    reactComponent(attrs?: any): React.ReactElement {
         throw new Error('not implemented');
     }
 
     private renderReactComponent(): void {
-        ReactDOM.render(this.reactComponent(), this.dom);
+        ReactDOM.render(this.reactComponent(this.attrs), this.dom);
     }
 }
