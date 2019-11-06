@@ -32,10 +32,6 @@ export default (pluginConfig: PluginConfig): Plugin[] => {
         class: "rpm-drop-cursor"
     }));
     plugins.push(gapCursor());
-    //@ts-ignore
-    plugins.push(columnResizing({lastColumnResizable: false}));
-    plugins.push(tableEditing());
-
 
     return plugins;
 }
