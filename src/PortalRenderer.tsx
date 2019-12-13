@@ -20,7 +20,8 @@ export const PortalRenderer: React.ForwardRefExoticComponent<React.RefAttributes
         render(id: string, children: React.ReactNode, container: Element) {
             container.id = id;
             const portal = ReactDOM.createPortal(children, container, id);
-            setPortalComponents(portalComponents => [
+            const index = portalComponents.findIndex(c => c.id === id);
+            if (index === -1) setPortalComponents(portalComponents => [
                 ...portalComponents,
                 {id, portal}
             ]);
@@ -32,7 +33,7 @@ export const PortalRenderer: React.ForwardRefExoticComponent<React.RefAttributes
             setPortalComponents(portalComponents => {
                 const arry = [...portalComponents];
                 const index = arry.findIndex(c => c.id === id);
-                arry.splice(index,1);
+                if(index > -1) arry.splice(index,1);
                 return arry;
             })
         }

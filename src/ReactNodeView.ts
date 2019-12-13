@@ -57,7 +57,7 @@ export class ReactNodeView implements NodeView {
     }
 
     destroy() {
-        ReactDOM.unmountComponentAtNode(this.dom)
+        this.pluginConfig.renderer.unmount(this.key);
     }
 
     ignoreMutation(): boolean {
@@ -88,6 +88,6 @@ export class ReactNodeView implements NodeView {
     }
 
     private renderReactComponent(): void {
-        ReactDOM.render(this.reactComponent(this.attrs), this.dom);
+        this.pluginConfig.renderer.render(this.key, this.reactComponent(this.attrs), this.dom);
     }
 }
