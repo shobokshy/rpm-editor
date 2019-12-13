@@ -8,6 +8,7 @@ import { enrichActions } from './utils/EnrichActions';
 import * as collab from "prosemirror-collab";
 import { EditorContext, DispatchTransaction } from './Types';
 import { InputRule } from 'prosemirror-inputrules';
+import { PortalRenderer, IPortalRenderer } from './PortalRenderer';
 
 require('./Editor.css');
 
@@ -35,6 +36,7 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 
 	const [editorState, setEditorState] = React.useState<EditorState>();
 	const isInitialRender = React.useRef<boolean>(true);
+	const portalRenderer = React.useRef<IPortalRenderer>(null);
 
 	React.useEffect(() => {
 		createEditorState();
@@ -43,7 +45,7 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	React.useLayoutEffect(() => {
 		if (!isInitialRender.current) reConfigureEditor()
 		isInitialRender.current = false;
-	}, [props.editable])
+	}, [props.plugins])
 
 	/**
 	 * Get actions and enrich them with editor state & dispatch function on new state
@@ -66,20 +68,28 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 		const plugins: Plugin[] = [];
 		const userPlugins = props.plugins;
 
-		if (userPlugins) plugins.push(...userPlugins({
+		if (userPlugins && portalRenderer.current) plugins.push(...userPlugins({
 			schema: props.schema,
 			dispatchTransaction: dispatchTransaction,
 			actions: getActions(),
 			editable: props.editable,
-			inputRules: props.inputRules
+			inputRules: props.inputRules,
+			renderer: {
+				render: portalRenderer.current.render,
+				unmount: portalRenderer.current.unmount
+			}
 		}));
 
-		plugins.push(...Plugins({
+		if (portalRenderer.current) plugins.push(...Plugins({
 			schema: props.schema,
 			dispatchTransaction: dispatchTransaction,
 			actions: getActions(),
 			editable: props.editable,
-			inputRules: props.inputRules
+			inputRules: props.inputRules,
+			renderer: {
+				render: portalRenderer.current.render,
+				unmount: portalRenderer.current.unmount
+			}
 		}));
 
 		if (!excludeCollab) plugins.push(
@@ -154,6 +164,7 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 						}}
 					>
 						{props.children}
+						<PortalRenderer ref={portalRenderer} />
 					</ReactEditorContext.Provider>
 				</div>
 			)}

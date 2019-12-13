@@ -9,13 +9,18 @@ import { Actions } from "../actions/BuiltInActions";
 import { EditableState } from "./EditableState";
 import { rules } from "./InputRules";
 import { InputRule } from "prosemirror-inputrules";
+import { IPortalRenderer } from "../PortalRenderer";
 
 export interface PluginConfig {
     schema: Schema,
     editable: boolean,
     dispatchTransaction: (tr: Transaction) => void,
     actions: Actions,
-    inputRules?: InputRule[]
+    inputRules?: InputRule[],
+    renderer: {
+        render: IPortalRenderer['render'],
+        unmount: IPortalRenderer['unmount']
+    }
     // editorProps: EditorProps
 }
 
