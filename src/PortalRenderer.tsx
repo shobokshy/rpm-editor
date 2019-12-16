@@ -39,7 +39,11 @@ export const PortalRenderer = React.forwardRef<IPortalRenderer, PortalRendererPr
                         ...portalComponents,
                         {id, portal}
                     ] 
-                } else return portalComponents
+                } else {
+                    const arry = [...portalComponents];
+                    arry[index] = {id, portal};
+                    return arry;
+                }
             });
         },
 
