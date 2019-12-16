@@ -3,11 +3,9 @@ import { Transaction, Plugin } from "prosemirror-state";
 import { history } from 'prosemirror-history';
 import { dropCursor } from "prosemirror-dropcursor";
 import { gapCursor } from "prosemirror-gapcursor";
-import { tableEditing, columnResizing } from "prosemirror-tables";
 import KeyMap from "./KeyMap";
 import { Actions } from "../actions/BuiltInActions";
 import { EditableState } from "./EditableState";
-import { rules } from "./InputRules";
 import { InputRule } from "prosemirror-inputrules";
 import { IPortalRenderer } from "../PortalRenderer";
 
@@ -21,7 +19,6 @@ export interface PluginConfig {
         render: IPortalRenderer['render'],
         unmount: IPortalRenderer['unmount']
     }
-    // editorProps: EditorProps
 }
 
 export default (pluginConfig: PluginConfig): Plugin[] => {

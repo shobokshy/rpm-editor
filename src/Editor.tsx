@@ -38,14 +38,14 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	const isInitialRender = React.useRef<boolean>(true);
 	const portalRenderer = React.useRef<IPortalRenderer>(null);
 
-	React.useEffect(() => {
+	React.useLayoutEffect(() => {
 		createEditorState();
 	}, [props.id])
 
-	React.useLayoutEffect(() => {
-		if (!isInitialRender.current) reConfigureEditor()
-		isInitialRender.current = false;
-	}, [props.plugins])
+	// React.useLayoutEffect(() => {
+	// 	if (!isInitialRender.current) reConfigureEditor()
+	// 	isInitialRender.current = false;
+	// }, [portalRenderer])
 
 	/**
 	 * Get actions and enrich them with editor state & dispatch function on new state
@@ -98,6 +98,7 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 			})
 		)
 
+		console.log(plugins)
 		return plugins;
 	}
 
@@ -116,8 +117,6 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	}
 
 	const reConfigureEditor = () => {
-		console.log('reconf')
-		console.log(getPlugins(true))
 		setEditorState((state) => {
 			if(state) return state.reconfigure({
 				plugins: [
@@ -150,24 +149,28 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	}
 	
 	return (
-		<React.Fragment>
-			{editorState && (
-				<div className={props.className ? props.className : "rpm-editor"}>
-					<ReactEditorContext.Provider
-						value={{
-							id: props.id,
-							editorState: editorState,
-							dispatchTransaction: dispatchTransaction,
-							editable: props.editable,
-							actions: getActions(editorState, dispatchTransaction),
-							debug: props.debug
-						}}
-					>
-						{props.children}
-						<PortalRenderer ref={portalRenderer} />
-					</ReactEditorContext.Provider>
-				</div>
+		<PortalRenderer ref={portalRenderer}>
+			{(portals) => (
+				<React.Fragment>
+					{editorState && (
+						<div className={props.className ? props.className : "rpm-editor"}>
+							<ReactEditorContext.Provider
+								value={{
+									id: props.id,
+									editorState: editorState,
+									dispatchTransaction: dispatchTransaction,
+									editable: props.editable,
+									actions: getActions(editorState, dispatchTransaction),
+									debug: props.debug
+								}}
+							>
+								{props.children}
+								{portals}
+							</ReactEditorContext.Provider>
+						</div>
+					)}
+				</React.Fragment>
 			)}
-		</React.Fragment>
+		</PortalRenderer>
 	);
 }
