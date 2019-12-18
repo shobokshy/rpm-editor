@@ -9,7 +9,7 @@ import Shortcut from "./Shortcut";
 interface Spec {
     command: (...args: any) => Command,
     type?: NodeType | MarkType | (NodeType | MarkType)[],
-    shortcuts?: Shortcut[],
+    shortcuts?: Shortcut[] | ((state: EditorState) => Shortcut[]),
     name?: string
 }
 
@@ -56,7 +56,15 @@ export default class Action {
      * @returns array of string shortcuts or an empty array if not any
      */
     get getShortcuts(): Shortcut[] {
-        if(this.spec.shortcuts) return this.spec.shortcuts
+        if(this.spec.shortcuts) {
+            if (this.spec.shortcuts instanceof Array) {
+                return this.spec.shortcuts
+            } else {
+                if (this.editorState)
+                    return this.spec.shortcuts(this.editorState)
+                else return [];
+            }
+        }
         return [];
     }
 

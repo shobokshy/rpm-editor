@@ -44,7 +44,6 @@ export class ReactNodeView implements NodeView {
     private init() {
         const dom = this.createDOMElement();
         dom.classList.add('node-view');
-        dom.id = `${this.key}_${generateUUID()}`;
         this.dom = dom;
         this.renderReactComponent();
     }
