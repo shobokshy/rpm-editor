@@ -16,6 +16,7 @@ const generateUUID = (): string => {
 
 export class ReactNodeView implements NodeView {
     dom: HTMLElement;
+    contentDOM?: HTMLElement;
     attrs?: any;
     private readonly key: string;
     readonly view: EditorView;
@@ -45,6 +46,7 @@ export class ReactNodeView implements NodeView {
         const dom = this.createDOMElement();
         dom.classList.add('node-view');
         this.dom = dom;
+        this.contentDOM = this.createContentDOMElement();
         this.renderReactComponent();
     }
 
@@ -77,6 +79,13 @@ export class ReactNodeView implements NodeView {
      */
     createDOMElement(): HTMLElement {
         throw new Error('not implemented');
+    }
+
+    /**
+     * An optional method that is used to create the content DOM element where editor will render the schema into.
+     */
+    createContentDOMElement(): HTMLElement | undefined {
+        return undefined;
     }
 
     /**
