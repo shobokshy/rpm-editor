@@ -61,7 +61,7 @@ export class ReactNodeView implements NodeView {
         this.pluginConfig.renderer.unmount(this.key);
     }
 
-    ignoreMutation(): boolean {
+    ignoreMutation(record: MutationRecord): boolean {
         return true;
     }
 
