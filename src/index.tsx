@@ -1,7 +1,7 @@
 export { ViewWithContext as View } from './View';
 export { Editor } from './Editor';
 export { withEditorContext } from './EditorContextHOC';
-export { DispatchTransaction, EditorContext, StepsInfo, Actions, Command } from './Types';
+export { DispatchTransaction, EditorContext, StepsInfo, Actions, Command, handleContentDOMRef } from './Types';
 export { enrichActions } from "./utils/EnrichActions";
 export { PluginConfig } from "./plugins";
 export { insertTable, insertImage } from "./Commands";

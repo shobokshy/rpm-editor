@@ -31,3 +31,5 @@ export interface Actions {
 }
 
 export type Command = (state: EditorState, dispatch?: DispatchTransaction) => boolean;
+
+export type handleContentDOMRef = (node: HTMLElement | null) => void

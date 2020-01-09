@@ -1,22 +1,12 @@
 import * as React from 'react';
-import * as ReactDOM from "react-dom";
 import { NodeView, EditorView } from "prosemirror-view";
+import { handleContentDOMRef } from "./Types";
 import { Node } from "prosemirror-model";
-import { DispatchTransaction } from "./Types";
 import { PluginConfig } from './plugins';
-
-// Create UUID.
-// Warning! This is not a compliant UUID. It is just used for html unique IDs
-const generateUUID = (): string => {
-    function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-    }
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
-}
 
 export class ReactNodeView implements NodeView {
     dom: HTMLElement;
-    contentDOM?: HTMLElement;
+    contentDOM?: HTMLElement | null;
     attrs?: any;
     private readonly key: string;
     readonly view: EditorView;
@@ -48,6 +38,15 @@ export class ReactNodeView implements NodeView {
         this.dom = dom;
         this.contentDOM = this.createContentDOMElement();
         this.renderReactComponent();
+        console.log(this)
+        
+    }
+
+    public static generateId() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+        }
+        return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
     }
 
     update(node: Node): boolean {
@@ -61,7 +60,7 @@ export class ReactNodeView implements NodeView {
         this.pluginConfig.renderer.unmount(this.key);
     }
 
-    ignoreMutation(record: MutationRecord): boolean {
+    ignoreMutation(record: MutationRecord | { type: "selection"; target: Element; }): boolean {
         return true;
     }
 
@@ -90,12 +89,18 @@ export class ReactNodeView implements NodeView {
 
     /**
      * Method that returns a react component that will be used to render
+     * @param attrs Attrs object created from updateAttrs or on init
+     * @param handleContentDOMRef A react ref used to place contentDOM inside the react component
      */
-    reactComponent(attrs?: any): React.ReactElement {
+    reactComponent(attrs?: any, handleContentDOMRef?: handleContentDOMRef): React.ReactElement {
         throw new Error('not implemented');
     }
 
     private renderReactComponent(): void {
-        this.pluginConfig.renderer.render(this.key, this.reactComponent(this.attrs), this.dom);
+        this.pluginConfig.renderer.render(this.key, this.reactComponent(this.attrs, (elem) => this.handleContentDOMRef(elem)), this.dom);
+    }
+
+    private handleContentDOMRef(node: HTMLElement | null) {
+        if (node && this.contentDOM) node.appendChild(this.contentDOM);
     }
 }
