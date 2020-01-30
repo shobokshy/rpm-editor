@@ -98,7 +98,6 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 			})
 		)
 
-		console.log(plugins)
 		return plugins;
 	}
 
@@ -106,7 +105,6 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	 * Create a new state for Prosemirror
 	 */
 	const createEditorState = () => {
-		console.log('init')
 		setEditorState(
 			EditorState.create({
 				schema: props.schema,

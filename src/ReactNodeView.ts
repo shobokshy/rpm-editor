@@ -38,8 +38,6 @@ export class ReactNodeView implements NodeView {
         this.dom = dom;
         this.contentDOM = this.createContentDOMElement();
         this.renderReactComponent();
-        console.log(this)
-        
     }
 
     public static generateId() {
@@ -58,6 +56,7 @@ export class ReactNodeView implements NodeView {
 
     destroy() {
         this.pluginConfig.renderer.unmount(this.key);
+        this.dom.remove();
     }
 
     ignoreMutation(record: MutationRecord | { type: "selection"; target: Element; }): boolean {

@@ -30,10 +30,10 @@ export const PortalRenderer = React.forwardRef<IPortalRenderer, PortalRendererPr
          */
         render(id: string, component: React.ReactNode, container: Element) {
             container.id = id;
-            const portal = ReactDOM.createPortal(component, container, id);
-            
+
             setPortalComponents(portalComponents => {
                 const index = portalComponents.findIndex(c => c.id === id);
+                const portal = ReactDOM.createPortal(component, container, id);
                 if (index === -1) {
                     return [
                         ...portalComponents,
