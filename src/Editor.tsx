@@ -6,9 +6,10 @@ import Plugins, { PluginConfig } from './plugins';
 import { Schema } from 'prosemirror-model';
 import { enrichActions } from './utils/EnrichActions';
 import * as collab from "prosemirror-collab";
-import { EditorContext, DispatchTransaction } from './Types';
+import { DispatchTransaction } from './Types';
 import { InputRule } from 'prosemirror-inputrules';
 import { PortalRenderer, IPortalRenderer } from './PortalRenderer';
+import { EditorContextProvider } from './EditorConextProvider';
 
 require('./Editor.css');
 
@@ -27,25 +28,15 @@ export interface EditorProps {
 	collabVersion?: number
 }
 
-/**
- * Editor's context which allows for different editor components to share state & methods
- */
-export const ReactEditorContext = React.createContext<EditorContext | null>(null);
 
 export const Editor: React.SFC<EditorProps> = (props) => {
 
 	const [editorState, setEditorState] = React.useState<EditorState>();
-	const isInitialRender = React.useRef<boolean>(true);
 	const portalRenderer = React.useRef<IPortalRenderer>(null);
 
 	React.useLayoutEffect(() => {
 		createEditorState();
 	}, [props.id])
-
-	// React.useLayoutEffect(() => {
-	// 	if (!isInitialRender.current) reConfigureEditor()
-	// 	isInitialRender.current = false;
-	// }, [portalRenderer])
 
 	/**
 	 * Get actions and enrich them with editor state & dispatch function on new state
@@ -152,7 +143,7 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 				<React.Fragment>
 					{editorState && (
 						<div className={props.className ? props.className : "rpm-editor"}>
-							<ReactEditorContext.Provider
+							<EditorContextProvider
 								value={{
 									id: props.id,
 									editorState: editorState,
@@ -162,9 +153,11 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 									debug: props.debug
 								}}
 							>
-								{props.children}
-								{portals}
-							</ReactEditorContext.Provider>
+								<React.Fragment>
+									{props.children}
+									{portals}
+								</React.Fragment>
+							</EditorContextProvider>
 						</div>
 					)}
 				</React.Fragment>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ReactEditorContext } from './Editor';
+import { Context } from './EditorConextProvider';
 import { EditorContext } from './Types';
 
 /**
@@ -15,9 +15,9 @@ import { EditorContext } from './Types';
 export function withEditorContext<P extends EditorContext>(Component: React.ComponentType<P>) {
     return function ComponentWithEditorContext(props: Pick<P, Exclude<keyof P, keyof EditorContext>>) {
         return (
-            <ReactEditorContext.Consumer>
+            <Context.Consumer>
                 {context => <Component {...props as P} {...context} />}
-            </ReactEditorContext.Consumer>
+            </Context.Consumer>
         );
     };
 }
