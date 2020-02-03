@@ -50,7 +50,6 @@ export class ReactNodeView implements NodeView {
     update(node: Node): boolean {
         if (node.type != this.node.type) return false;
         this.node = node;
-        this.renderReactComponent();
         return true;
     }
 
