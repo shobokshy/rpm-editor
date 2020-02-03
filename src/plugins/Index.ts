@@ -5,7 +5,6 @@ import { dropCursor } from "prosemirror-dropcursor";
 import { gapCursor } from "prosemirror-gapcursor";
 import KeyMap from "./KeyMap";
 import { Actions } from "../actions/BuiltInActions";
-import { EditableState } from "./EditableState";
 import { InputRule } from "prosemirror-inputrules";
 import { IPortalRenderer } from "../PortalRenderer";
 
@@ -24,11 +23,8 @@ export interface PluginConfig {
 export default (pluginConfig: PluginConfig): Plugin[] => {
     const plugins: Plugin[] = [];
     
-
-    plugins.push(EditableState(pluginConfig));
     plugins.push(KeyMap(pluginConfig.actions));
     plugins.push(history());
-    //plugins.push(rules(pluginConfig.inputRules));
     plugins.push(dropCursor({
         //@ts-ignore
         class: "rpm-drop-cursor"

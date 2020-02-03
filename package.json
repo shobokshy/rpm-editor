@@ -1,6 +1,6 @@
 {
   "name": "rpm-editor",
-  "version": "2.0.0-alpha.38",
+  "version": "2.0.0-alpha.39",
   "description": "",
   "main": "lib/index.js",
   "files": [
@@ -88,7 +88,6 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
-    "lodash.throttle": "^4.1.1",
-    "rxjs": "^6.5.3"
+    "lodash.throttle": "^4.1.1"
   }
 }
