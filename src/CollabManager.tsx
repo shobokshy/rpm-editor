@@ -35,6 +35,19 @@ const CollabManagerComponent: React.FC<CollabManagerComponentProps> = (props) =>
     }, [])
 
     React.useEffect(() => {
+        window.onbeforeunload = () => {
+            getSendableSteps(true);
+            const sendable = collab.sendableSteps(editorState.current);
+
+            if (sendable && sendable.steps.length > 0) return "You have unsaved content! Are you sure you want to leave?";
+        }
+
+        return () => {
+            window.onbeforeunload = null;
+        }
+    }, [])
+
+    React.useEffect(() => {
         getSendableSteps();
     }, [props.editorState])
 
