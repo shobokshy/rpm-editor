@@ -1,21 +1,24 @@
 import * as React from 'react';
-import { EditorContext, StepsInfo } from './Types';
+import { EditorContext, StepsInfo, Committed } from './Types';
 import * as collab from "prosemirror-collab";
 import { withEditorContext } from './EditorContextHOC';
 import { Step } from 'prosemirror-transform';
 import { Transaction, EditorState } from 'prosemirror-state';
 import { Schema } from 'prosemirror-model';
+import { Mutex } from 'async-mutex';
 import throttle = require('lodash.throttle');
 
 export interface CollabManagerConfig {
     onIncomingSteps: (cb: (steps?: StepsInfo) => void) => void;
     onSendableSteps: (
-        id: string | number, 
-        sendableSteps: { version: number, steps: Step < any > [], clientId: string | number, origins?: Transaction < any > [] },
-        acknowledged: (steps: StepsInfo) => void
+        id: string | number,
+        schema: Schema,
+        sendableSteps: { version: number, steps: Step<any>[], clientId: string | number, origins?: Transaction<any>[] },
+        acknowledged: (committed: Committed) => void
     ) => void;
     getNewSteps: (id: string | number, version: number, schema: Schema, cb: (steps: StepsInfo) => void) => void;
     onConnectionDrop: (cb: () => void) => void;
+    onConnectionReturn: (cb: () => void) => void;
 }
 
 interface CollabManagerComponentProps extends EditorContext {
@@ -26,18 +29,22 @@ interface CollabManagerComponentProps extends EditorContext {
 const CollabManagerComponent: React.FC<CollabManagerComponentProps> = (props) => {
 
     const editorState = React.useRef<EditorState>(props.editorState);
-    const savedVersion = React.useRef<number>(-1);
-    const waitingForAck = React.useRef<boolean>(false);
+    const recieveLock = React.useRef(new Mutex());
+    const sendLock = React.useRef(new Mutex());
     const sendThrottled = React.useRef(throttle(() => {
-            sendSteps()
-        }, props.throttleWait || 1000)
+        sendSteps()
+    }, props.throttleWait || 1000)
+    );
+    const getThrottled = React.useRef(throttle(() => {
+        getSteps()
+    }, props.throttleWait || 1000)
     );
 
     React.useEffect(() => {
         listenForSteps();
 
         return () => {
-            getSendableSteps(true)
+            sendSteps()
         }
     }, [])
 
@@ -56,62 +63,80 @@ const CollabManagerComponent: React.FC<CollabManagerComponentProps> = (props) =>
 
     React.useLayoutEffect(() => {
         editorState.current = props.editorState;
-        getSendableSteps(false);
-    }, [props.editorState.doc]);
+        trySendSteps();
+    }, [props.editorState]);
 
     const listenForSteps = () => {
 
         props.config.onIncomingSteps((incoming) => {
-            const currentVersion = collab.getVersion(editorState.current);
-
             if (incoming) {
                 receiveTransaction(incoming);
             } else {
-                props.config.getNewSteps(props.id, currentVersion, props.editorState.schema, (incomingSteps) => {
-                    receiveTransaction(incomingSteps);
-                })
+                tryGetSteps();
             }
         });
 
-        props.config.onConnectionDrop(() => {
-            waitingForAck.current = false;
+        props.config.onConnectionReturn(() => {
+            sendSteps();
         });
     }
 
-    const sendSteps = () => {
-        const sendable = collab.sendableSteps(editorState.current);
+    const getSteps = () => {
+        recieveLock.current.acquire().then(release => {
+            setTimeout(() => release(), 5000);
 
-        if (sendable && !waitingForAck.current) {
-            waitingForAck.current = true;
-            props.config.onSendableSteps(props.id, {
-                version: sendable.version,
-                clientId: sendable.clientID,
-                steps: sendable.steps
-            }, (acknowledged: StepsInfo) => {
-                receiveTransaction(acknowledged);
-                waitingForAck.current = false;
+            const currentVersion = collab.getVersion(editorState.current);
+            props.config.getNewSteps(props.id, currentVersion, props.editorState.schema, (incomingSteps) => {
+                receiveTransaction(incomingSteps);
+                release();
             });
-        }
+        })
     }
 
-    const getSendableSteps = (unthrottled?: boolean) => {
-        if (unthrottled) {
-            sendSteps();
-        } else {
-            sendThrottled.current();
-        }
+    const sendSteps = () => {
+        sendLock.current.acquire().then(release => {
+            setTimeout(() => release(), 5000);
+
+            const sendable = collab.sendableSteps(editorState.current);
+
+            if (sendable) {
+                props.config.onSendableSteps(props.id, props.editorState.schema, {
+                    version: sendable.version,
+                    clientId: sendable.clientID,
+                    steps: sendable.steps
+                }, (acknowledged: Committed) => {
+                    if (acknowledged.committed === true) {
+                        if (acknowledged.data) receiveTransaction(acknowledged.data);
+                        release();
+                    } else {
+                        tryGetSteps();
+                        release();
+                    }
+                });
+            } else {
+                release();
+            }
+        })
+    }
+
+    const trySendSteps = () => {
+        sendThrottled.current();
+    }
+
+    const tryGetSteps = () => {
+        getThrottled.current();
     }
 
     const receiveTransaction = (data: StepsInfo) => {
-        if (data.version! > savedVersion.current) {
-            props.dispatchTransaction(
-                collab.receiveTransaction(
-                    editorState.current,
-                    data.steps,
-                    data.clientIds
-                )
+
+        const currentVersion = collab.getVersion(editorState.current);
+        if (data.version! > currentVersion) {
+            const tr = collab.receiveTransaction(
+                editorState.current,
+                data.steps,
+                data.clientIds
             )
-            savedVersion.current = data.version!;
+            props.dispatchTransaction(tr);
         }
     }
 

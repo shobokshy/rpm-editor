@@ -133,8 +133,12 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 	 * Update current editor state with a new transaction
 	 * @param tr Prosemirror Transaction
 	 */
-	const dispatchTransaction = (tr: Transaction): void => {
-		setEditorState(state => state ? state.apply(tr) : undefined);
+	const dispatchTransaction = (tr: Transaction | ((state: EditorState) => Transaction)): void => {
+		if (typeof tr === 'function') {
+			setEditorState(s => s ? s.apply(tr(s)) : undefined);
+		} else {
+			setEditorState(s => s ? s.apply(tr) : undefined);
+		}
 	}
 	
 	return (

@@ -7,11 +7,12 @@ import KeyMap from "./KeyMap";
 import { Actions } from "../actions/BuiltInActions";
 import { InputRule } from "prosemirror-inputrules";
 import { IPortalRenderer } from "../PortalRenderer";
+import { DispatchTransaction } from "../Types";
 
 export interface PluginConfig {
     schema: Schema,
     editable: boolean,
-    dispatchTransaction: (tr: Transaction) => void,
+    dispatchTransaction: DispatchTransaction,
     actions: Actions,
     inputRules?: InputRule[],
     renderer: {

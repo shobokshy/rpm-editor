@@ -17,6 +17,7 @@ export const actions: Actions = {
     chainCommands: new Action({
         command: (...commands: Command[]) => {
             console.log(commands.length)
+            //@ts-ignore
             return chainCommands(...commands)
         },
         name: 'Chain Commands'

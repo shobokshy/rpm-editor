@@ -16,6 +16,7 @@ export default (actions: Actions) => {
         const shortcuts = action.getShortcuts;
         shortcuts.forEach((shortcut) => {
             if (keys[shortcut.key]) {
+                //@ts-ignore
                 keys[shortcut.key] = chainCommands(keys[shortcut.key], action.getCommand(shortcut.attrs))
             } else {
                 keys[shortcut.key] = action.getCommand(shortcut.attrs)
@@ -65,6 +66,7 @@ export default (actions: Actions) => {
     // Add existing basemap keys to our custom set of keys
     Object.keys(baseKeymap).forEach((key: string) => {
         if (keys[key]) {
+            //@ts-ignore
             keys[key] = chainCommands(keys[key], baseKeymap[key])
         } else {
             keys[key] = baseKeymap[key]
