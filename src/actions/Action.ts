@@ -1,9 +1,10 @@
-import { NodeType, MarkType } from "prosemirror-model";
+import { Command } from "prosemirror-commands";
+import { MarkType, NodeType } from "prosemirror-model";
 import { EditorState } from "prosemirror-state";
-import NodeIsActive from "../utils/NodeIsActive";
-import MarkIsActive from "../utils/MarkIsActive";
+import { DispatchTransaction } from "../Types";
 import GetSelectedMarksAttrs from "../utils/GetSelectedMarksAttrs";
-import { DispatchTransaction, Command } from "../Types";
+import MarkIsActive from "../utils/MarkIsActive";
+import NodeIsActive from "../utils/NodeIsActive";
 import Shortcut from "./Shortcut";
 
 interface Spec {

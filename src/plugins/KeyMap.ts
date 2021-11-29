@@ -1,7 +1,6 @@
-import { Actions } from "../actions/BuiltInActions";
+import { baseKeymap, chainCommands, Command } from "prosemirror-commands";
 import { keymap } from "prosemirror-keymap";
-import { baseKeymap, chainCommands } from "prosemirror-commands";
-import { Command } from "../Types";
+import { Actions } from "../actions/BuiltInActions";
 
 interface Keys {
     [key:string]: Command;
@@ -66,7 +65,6 @@ export default (actions: Actions) => {
     // Add existing basemap keys to our custom set of keys
     Object.keys(baseKeymap).forEach((key: string) => {
         if (keys[key]) {
-            //@ts-ignore
             keys[key] = chainCommands(keys[key], baseKeymap[key])
         } else {
             keys[key] = baseKeymap[key]
