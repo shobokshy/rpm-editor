@@ -1,7 +1,16 @@
-import Editor from './Editor';
-import View from './View';
-import withEditorContext, {IEditorProps} from './EditorContextHOC';
+export { ViewWithContext as View } from './View';
+export { Editor } from './Editor';
+export { withEditorContext } from './EditorContextHOC';
+export { DispatchTransaction, EditorContext, StepsInfo, Actions, Command, handleContentDOMRef } from './Types';
+export { enrichActions } from "./utils/EnrichActions";
+export { PluginConfig } from "./plugins";
+export { insertTable, insertImage } from "./Commands";
+export { makeRenderable } from "./utils/MakeRenderable";
+export { ReactNodeView } from "./ReactNodeView";
 
+export { actions as BuiltInActions } from "./actions/BuiltInActions";
+export { default as Action } from "./actions/Action";
 
-export { Editor, View, withEditorContext ,IEditorProps };
-export { default as actions } from "./actions/Index";
+export { CollabManager, CollabManagerConfig } from "./CollabManager";
+
+export { useEditor } from './EditorConextProvider';

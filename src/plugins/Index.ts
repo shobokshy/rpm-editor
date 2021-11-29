@@ -4,24 +4,33 @@ import { history } from 'prosemirror-history';
 import { dropCursor } from "prosemirror-dropcursor";
 import { gapCursor } from "prosemirror-gapcursor";
 import KeyMap from "./KeyMap";
-import actions, { Actions } from "../actions/Index";
-// import { EditorProps } from "prosemirror-view";
+import { Actions } from "../actions/BuiltInActions";
+import { InputRule } from "prosemirror-inputrules";
+import { IPortalRenderer } from "../PortalRenderer";
+import { DispatchTransaction } from "../Types";
 
-export interface IPluginConfig {
+export interface PluginConfig {
     schema: Schema,
-    dispatchTransaction: (tr: Transaction) => void,
-    actions: Actions
-    // editorProps: EditorProps
+    editable: boolean,
+    dispatchTransaction: DispatchTransaction,
+    actions: Actions,
+    inputRules?: InputRule[],
+    renderer: {
+        render: IPortalRenderer['render'],
+        unmount: IPortalRenderer['unmount']
+    }
 }
 
-export default (pluginConfig: IPluginConfig): Plugin[] => {
+export default (pluginConfig: PluginConfig): Plugin[] => {
     const plugins: Plugin[] = [];
-
+    
     plugins.push(KeyMap(pluginConfig.actions));
     plugins.push(history());
-    plugins.push(dropCursor());
+    plugins.push(dropCursor({
+        //@ts-ignore
+        class: "rpm-drop-cursor"
+    }));
     plugins.push(gapCursor());
-
 
     return plugins;
 }

@@ -1,77 +1,71 @@
 import * as React from 'react';
-import { Transaction } from "prosemirror-state";
-import { EditorView } from 'prosemirror-view';
-import { EditorContext } from './Editor';
+import { EditorView, DirectEditorProps } from 'prosemirror-view';
+import { withEditorContext } from './EditorContextHOC';
+import { EditorContext } from './Types';
+import applyDevTools from "prosemirror-dev-tools"
 
-
-
-interface IComponentProps {
-
+interface ViewProps extends EditorContext {
+    className?: string
 }
 
-interface IComponentState {
-    editorView?: EditorView,
-    editorRef: React.RefObject<any>
-}
+const View: React.SFC<ViewProps> = (props) => {
 
-class View extends React.Component<IComponentProps,IComponentState> {
-    constructor(props: IComponentProps) {
-        super(props)
-        this.state = {
-            editorView: undefined,
-            editorRef: React.createRef()
+    const editorViewDOMRef = React.useRef<any>();
+    const [editorView, setEditorView] = React.useState<EditorView>();
+
+    React.useEffect(() => {
+        createEditorView();
+        return () => {
+            destroy();
         }
+    }, []);
+
+    React.useLayoutEffect(() => {
+        if (editorView) editorView.updateState(props.editorState);
+        focus();
+    }, [props.editorState])
+
+    React.useLayoutEffect(() => {
+        reconfigureEditorView();
+        focus();
+    }, [props.editable])
+
+    React.useEffect(() => {
+        if (props.debug && editorView) applyDevTools(editorView);
+    }, [editorView])
+
+    const createEditorView = () => {
+        if (editorViewDOMRef) setEditorView(new EditorView(
+            editorViewDOMRef.current,
+            {
+                state: props.editorState,
+                dispatchTransaction: props.dispatchTransaction,
+                editable: () => props.editable
+            }
+        ))
     }
 
-    componentDidMount() {
-        this.createEditorView();
-    }
-
-    // on new state from parent, update the view with that state
-    componentDidUpdate(prevProps: IComponentProps) {
-        if(this.state.editorView) {
-            this.state.editorView.updateState(this.context.editorState);
-            this.focus();
-        }
-    }
-
-    private createEditorView(): void {
-        this.setState({
-            editorView: new EditorView(
-                this.state.editorRef.current,
-                {
-                    state: this.context.editorState,
-                    dispatchTransaction: this.dispatchTransaction.bind(this),
-                    editable: () => this.context.editable
-                }
-            )
-        })
-    }
-
-    // dispatch transaction function from parent
-    // send new transactions coming from view to parent
-    private dispatchTransaction(tr: Transaction) {
-        this.context.dispatchTransaction(tr);
+    const reconfigureEditorView = () => {
+        if (editorView) editorView.setProps({
+            editable: () => props.editable,
+            state: props.editorState
+        });
     }
 
     // Focus cursor to editor view
-    public focus() {
-        if(this.state.editorView) this.state.editorView.focus();
+    const focus = () => {
+        if (editorView && !editorView.hasFocus()) editorView.focus();
     }
 
-    // clean up on un mount
-    public componentWillUnmount() {
-        if(this.state.editorView) this.state.editorView.destroy();
+    // Destroy editor view
+    const destroy = () => {
+        if (editorView) editorView.destroy();
     }
-
-    render() {
-        return (
-            <div ref={this.state.editorRef} />
-        );
-    }
+    
+    return (
+        <div className={props.className} ref={editorViewDOMRef} />
+    );
+    
 }
 
-// Subscribe to the editor's context
-View.contextType = EditorContext;
-
-export default View;
+export const ViewWithContext = withEditorContext(View);

@@ -1,122 +1,171 @@
-import { EditorState, Transaction } from 'prosemirror-state';
+import { EditorState, Transaction, Plugin, PluginKey } from 'prosemirror-state';
+import { Node } from 'prosemirror-model';
 import * as React from 'react';
-import actions, { Actions } from './actions/Index';
-import Plugins from './plugins';
-import BuiltInSchema from './schema';
-import { EditorView } from 'prosemirror-view';
+import { Actions } from './actions/BuiltInActions';
+import Plugins, { PluginConfig } from './plugins';
+import { Schema } from 'prosemirror-model';
+import { enrichActions } from './utils/EnrichActions';
+import * as collab from "prosemirror-collab";
+import { DispatchTransaction } from './Types';
+import { InputRule } from 'prosemirror-inputrules';
+import { PortalRenderer, IPortalRenderer } from './PortalRenderer';
+import { EditorContextProvider } from './EditorConextProvider';
 
 require('./Editor.css');
 
-interface IComponentState {
-	editorState: EditorState,
-	editorView: React.RefObject<EditorView>
-  	renderView: boolean
-}
-
-interface IComponentProps {
-	editable: boolean,
+export interface EditorProps {
+	id: string | number,
 	className?: string,
-	children?: React.ReactNode
-}
+	children?: React.ReactNode,
 
-/**
- * Interface for the editor's context
- */
-interface IEditorContext {
-	editorState: EditorState,
-	dispatchTransaction: DispatchTransaction,
+	document?: Node,
+	editable: boolean,
 	actions: Actions,
-	editable: boolean
+	plugins?: (pluginConfig: PluginConfig) => Plugin[],
+	inputRules?: InputRule[],
+	schema: Schema,
+	debug?: boolean,
+	collabVersion?: number
 }
 
-/**
- * Editor's context which allows for different editor components to share state & methods
- */
-const EditorContext = React.createContext<IEditorContext | null>(null);
 
-/**
- * A function that takes a transaction as an input and applies that transaction to the editor's state
- */
-type DispatchTransaction = (tr: Transaction) => void
+export const Editor: React.SFC<EditorProps> = (props) => {
 
-class Editor extends React.Component<IComponentProps, IComponentState> {
-	constructor(props: IComponentProps) {
-		super(props)
-		this.state = {
-			editorState: this.createEditorState(),
-			editorView: React.createRef(),
-			renderView: false,
-		}
-	}
+	const [editorState, setEditorState] = React.useState<EditorState>();
+	const portalRenderer = React.useRef<IPortalRenderer>(null);
 
-	/**
-	 * Create a new state for Prosemirror
-	 */
-	private createEditorState(): EditorState {
-		return EditorState.create({
-			schema: BuiltInSchema,
-			doc: undefined,
-			plugins: [
-				...Plugins({
-					schema: BuiltInSchema,
-					dispatchTransaction: this.dispatchTransaction.bind(this),
-					actions: this.getActions()
-				})
-			]
-		});
-	}
-
-	/**
-	 * Update current editor state with a new transaction
-	 * @param tr Prosemirror Transaction
-	 */
-	private dispatchTransaction(tr: Transaction): void {
-		this.setState({
-			editorState: this.state.editorState.apply(tr)
-		},
-			// focus to the editor view on new transactions
-			this.focus
-		)
-	}
+	React.useLayoutEffect(() => {
+		createEditorState();
+	}, [props.id])
 
 	/**
 	 * Get actions and enrich them with editor state & dispatch function on new state
 	 * @param editorState Editor's current state
 	 * @param dispatch a dispatch function that takes a transaction
 	 */
-	private getActions(editorState?: EditorState, dispatch?: DispatchTransaction): Actions {
-		if(editorState && dispatch) {
-			Object.keys(actions).forEach((action: string) => {
-				actions[action].addStateAndDispatch(editorState, dispatch)
-			});
-
-			return actions;
+	const getActions = (editorState?: EditorState, dispatch?: DispatchTransaction): Actions => {
+		if (editorState && dispatch) {
+			return enrichActions(props.actions, editorState, dispatch);
 		} else {
-			return actions;
+			return props.actions;
 		}
 	}
 
-	private focus() {
-		if(this.state.editorView.current) this.state.editorView.current.focus();
+	/**
+	 * Gets an array of builtin plugins and user provided plugins
+	 * @returns an array of plugins
+	 */
+	const getPlugins = (excludeCollab?: boolean): Plugin[] => {
+		const plugins: Plugin[] = [];
+		const userPlugins = props.plugins;
+
+		if (userPlugins && portalRenderer.current) plugins.push(...userPlugins({
+			schema: props.schema,
+			dispatchTransaction: dispatchTransaction,
+			actions: getActions(),
+			editable: props.editable,
+			inputRules: props.inputRules,
+			renderer: {
+				render: portalRenderer.current.render,
+				unmount: portalRenderer.current.unmount
+			}
+		}));
+
+		if (portalRenderer.current) plugins.push(...Plugins({
+			schema: props.schema,
+			dispatchTransaction: dispatchTransaction,
+			actions: getActions(),
+			editable: props.editable,
+			inputRules: props.inputRules,
+			renderer: {
+				render: portalRenderer.current.render,
+				unmount: portalRenderer.current.unmount
+			}
+		}));
+
+		if (!excludeCollab) plugins.push(
+			collab.collab({
+				version: props.collabVersion || 0
+			})
+		)
+
+		return plugins;
 	}
 
-	public render() {
-		return (
-			<div className={this.props.className ? this.props.className : "rpm-editor"}>
-				<EditorContext.Provider
-					value={{
-						editorState: this.state.editorState,
-						dispatchTransaction: this.dispatchTransaction.bind(this),
-						editable: this.props.editable,
-						actions: this.getActions(this.state.editorState, this.dispatchTransaction.bind(this))
-					}}
-				>
-					{this.props.children}
-				</EditorContext.Provider>
-			</div>
-		);
+	/**
+	 * Create a new state for Prosemirror
+	 */
+	const createEditorState = () => {
+		setEditorState(
+			EditorState.create({
+				schema: props.schema,
+				doc: props.document,
+				plugins: getPlugins()
+			})
+		)
 	}
+
+	const reConfigureEditor = () => {
+		setEditorState((state) => {
+			if(state) return state.reconfigure({
+				plugins: [
+					...getPlugins(true).filter((plugin) => {
+						if (plugin.spec.key) {
+							//@ts-ignore
+							return plugin.key != "tableColumnResizing$"
+						} else { return true}
+					}),
+					...state.plugins.filter((plugin) => {
+						if (plugin.spec.key) {
+							//@ts-ignore
+							return plugin.key === "tableColumnResizing$"
+						} else { return false }
+					}),
+					collab.collab({
+						version: collab.getVersion(state)
+					})
+				]
+			})
+		})
+	}
+
+	/**
+	 * Update current editor state with a new transaction
+	 * @param tr Prosemirror Transaction
+	 */
+	const dispatchTransaction = (tr: Transaction | ((state: EditorState) => Transaction)): void => {
+		if (typeof tr === 'function') {
+			setEditorState(s => s ? s.apply(tr(s)) : undefined);
+		} else {
+			setEditorState(s => s ? s.apply(tr) : undefined);
+		}
+	}
+	
+	return (
+		<PortalRenderer ref={portalRenderer}>
+			{(portals) => (
+				<React.Fragment>
+					{editorState && (
+						<div className={props.className ? props.className : "rpm-editor"}>
+							<EditorContextProvider
+								value={{
+									id: props.id,
+									editorState: editorState,
+									dispatchTransaction: dispatchTransaction,
+									editable: props.editable,
+									actions: getActions(editorState, dispatchTransaction),
+									debug: props.debug
+								}}
+							>
+								<React.Fragment>
+									{props.children}
+									{portals}
+								</React.Fragment>
+							</EditorContextProvider>
+						</div>
+					)}
+				</React.Fragment>
+			)}
+		</PortalRenderer>
+	);
 }
-
-export default Editor;
-export { DispatchTransaction, EditorContext, IEditorContext };
