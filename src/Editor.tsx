@@ -1,15 +1,14 @@
-import { EditorState, Transaction, Plugin, PluginKey } from 'prosemirror-state';
-import { Node } from 'prosemirror-model';
+import * as collab from "prosemirror-collab";
+import { InputRule } from 'prosemirror-inputrules';
+import { Node, Schema } from 'prosemirror-model';
+import { EditorState, Plugin, Transaction } from 'prosemirror-state';
 import * as React from 'react';
 import { Actions } from './actions/BuiltInActions';
-import Plugins, { PluginConfig } from './plugins';
-import { Schema } from 'prosemirror-model';
-import { enrichActions } from './utils/EnrichActions';
-import * as collab from "prosemirror-collab";
-import { DispatchTransaction } from './Types';
-import { InputRule } from 'prosemirror-inputrules';
-import { PortalRenderer, IPortalRenderer } from './PortalRenderer';
 import { EditorContextProvider } from './EditorConextProvider';
+import Plugins, { PluginConfig } from './plugins';
+import { IPortalRenderer, PortalRenderer } from './PortalRenderer';
+import { DispatchTransaction } from './Types';
+import { enrichActions } from './utils/EnrichActions';
 
 require('./Editor.css');
 
@@ -17,7 +16,7 @@ export interface EditorProps {
 	id: string | number,
 	className?: string,
 	children?: React.ReactNode,
-
+	onChange?: (editorState: EditorState) => void,
 	document?: Node,
 	editable: boolean,
 	actions: Actions,
@@ -33,6 +32,10 @@ export const Editor: React.SFC<EditorProps> = (props) => {
 
 	const [editorState, setEditorState] = React.useState<EditorState>();
 	const portalRenderer = React.useRef<IPortalRenderer>(null);
+
+	React.useEffect(() => {
+		if (props.onChange && editorState) props.onChange(editorState);
+	}, [editorState])
 
 	React.useLayoutEffect(() => {
 		createEditorState();
