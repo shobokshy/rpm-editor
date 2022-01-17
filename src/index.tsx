@@ -1,5 +1,5 @@
 export { ViewWithContext as View } from './View';
-export { Editor } from './Editor';
+export { Editor, EditorProps } from './Editor';
 export { withEditorContext } from './EditorContextHOC';
 export { DispatchTransaction, EditorContext, StepsInfo, Actions, Command, handleContentDOMRef } from './Types';
 export { enrichActions } from "./utils/EnrichActions";
